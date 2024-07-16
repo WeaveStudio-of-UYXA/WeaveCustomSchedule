@@ -1,0 +1,35 @@
+# This is an example of using the countdown to prevent players
+# from entering the server when the server is just started
+# Because the server is probably still loading at this time, and it is very stuck.
+# 30s later, the server will be ready to accept players.
+# Here we assume that a notification message is sent to the community.
+# If you have a similar plugin, you can try this.
+name: 'Server Start'
+callID: "serverstart"
+description: 'Make server start more interesting.'
+enable: false # just a sample, so will not disturb you
+startOnLoad: true
+interval: 30
+total: 1
+
+notice:
+  mode: "none" # this is a silent countdown
+  colorbar:
+    - "#FF0000"
+    - "#FFFF00"
+    - "#00FF00"
+  bossbarModeText: "Event @e in countdown @c has @s seconds left."
+  broadcastAndTitleModeText:
+    '5': '5 seconds left'
+    '4': '4 seconds left'
+    '1': '1 second left'
+onStart:
+  commands:
+    - "whitelist on"
+  broadcast: []
+events:
+  '0':
+    commands:
+      - "whitelist off"
+      - "some_robot_command Server started!"
+    broadcast: []

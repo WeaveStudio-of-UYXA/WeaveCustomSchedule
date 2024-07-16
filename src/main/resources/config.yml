@@ -1,0 +1,11 @@
+config_version: "1.0" # DO NOT CHANGE THIS VALUE
+
+language: 'en_US'
+prefix: "&b[&aCustom Schedule&b] &7"
+debugPrint:
+  eventExecuted:
+    Console: true
+    Player: true
+  timerLoop:
+    Console: true
+    Player: true

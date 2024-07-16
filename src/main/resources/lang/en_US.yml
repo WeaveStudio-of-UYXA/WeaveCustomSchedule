@@ -1,0 +1,26 @@
+# Do not change the key, only the value
+# Translation must have the same '@ placeholder' as the original message
+# If you want to translate by yourself, it is recommended to use a file name
+# that is NOT in the standard language code table, because plugin updates may
+# officially support these languages at any time, and then cause the official translation
+# to cover your own translation files. Such as 'my_en_US.yml'
+plugin:
+  reload: "Plugin config reloaded."
+  reloadWarning: 
+   - "Are you sure you want to reload? If there is still unfinished content "
+   - "in the current minute, they will NOT be executed and will RESTART"
+   - "immediately after overloading. It is strongly recommended that reload ONLY"
+   - "when you are sure there is no content to be executed in the current minute."
+   - "If you are sure, please use reload command again to confirm."
+schedule:
+  loaded: "Schedule &a@s &7loaded"
+  loadFailed: "Failed to load schedule &a@s, &7may have syntax error"
+  loadButDisabled: "Schedule &a@s &7loaded but disabled, it will not be executed"
+  executed: "Event &a@e &7 in schedule &a@s &7executed"
+countdown:
+  loaded: "Countdown &a@c &7loaded"
+  loadFailed: "Failed to load countdown &a@c, &7may have syntax error"
+  started: "Countdown &a@c &7started, will be executed in @s%s"
+  executed: "Event &a@e &7 in countdown &a@c &7executed"
+
+

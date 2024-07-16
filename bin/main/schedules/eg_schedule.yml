@@ -1,0 +1,42 @@
+name: 'Example Schedule'
+description: 'An example schedule'
+enable: true
+
+# You can have multiple schedules in one file.
+events:
+  hello_world: # id
+    name: 'Hello, world!' # Display name
+    description: 'An example schedule event' # Description
+    rule:
+      # Should All the commands be executed in one tick?
+      # If there are commands that may cause performance issues, please set them to false,
+      # which means ensure that they are all executed within one minute, but with sufficient time intervals.
+      # Eg, 20 commands will be executed at intervals of approximately 3 seconds each.
+      # ==> NOTICE : This setting does not affect broadcast
+      immediate: true
+      # Must be in the format of "HH:MM" (24-hour , and must be four digits, eg, 05:30)
+      #   Can use `?`to represents any value. Schedule will be executed every time a match is met.
+      # Eg, this schedule will be executed every 10 minute in every hour.
+      HHMM: '??:?0'
+      # No matter how much data you enter, please use commas to separate them.
+      #   Week-input: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
+      #   Day-input: 01, ... , 31. (must be 2 digits, eg, 01, 02, 03)
+      # Week-input and Day-input can be used together.
+      # Day-input allows the use of `?` to represent any value.
+      # ==> NOTICE : Spaces are allowed before and after commas.
+      # ==> NOTICE : All date identifiers are related to `OR`, not to `AND`
+      # Eg, this schedule will be executed in every Saturday and Sunday, the first day of every month,
+      # and day 20-28(or 29) of every month.
+      day: 'Saturday, Sunday, 01, 2?'
+      # No matter how much data you enter, please use commas to separate them.
+      # Input only 1, 2, ..., 12, do not use 01 - 09.
+      # ==> NOTICE: *NOT* Allows the use of `?` to represent any value.
+      # Eg, this schedule will be executed in the first 9 months of each year.
+      month: '1, 2, 3, 4, 5, 6, 7, 8, 9'
+    # The commands to be executed when the schedule is triggered. Can be empty.
+    commands:
+      - "say Hello, world!"
+      - "say This is an example schedule."
+    broadcast:
+      - "Hello, world!"
+      - "This is an example schedule."

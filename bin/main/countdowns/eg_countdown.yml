@@ -1,0 +1,54 @@
+name: 'Example Countdown'
+# The ID of the countdown, used to call the countdown in the command
+# Advise 0-9, A-Z, a-z, and _ only, do not contain spaces or special characters.
+callID: "cd1"
+description: 'An example Countdown'
+startOnLoad: false # Whether to start the countdown when the server is loaded
+# The time interval between each countdown, in seconds
+interval: 10
+# The total number of countdowns, 0 or less means infinite
+total: 1
+
+notice:
+  # select in [actionbar, bossbar, broadcast, title, none]
+  # none: silent, if you just want to display timed announcement, you can choose this.
+  # We strongly recommend NOT using title mode, it may scare the player.
+  # (Developer once been scared by the title generated from other plugins, QAQ)
+  # And broadcast mode may be ignored by some players.
+  # So generally we recommend using actionbar or bossbar mode.
+  mode: "bossbar"
+  # 100% -> 0%
+  colorbar:
+    - "#FF0000"
+    - "#FFFF00"
+    - "#00FF00"
+  actionbarAndBossbarModeText: "Event @e in countdown @c has @s seconds left."
+  broadcastAndTitleModeText:
+    '5': '5 seconds left'
+    '4': '4 seconds left'
+    '1': '1 second left'
+
+# The commands to be executed when the countdown starts. Can be empty.
+onStart:
+  commands:
+    - "say Countdown started!"
+  broadcast:
+    - "Countdown started!"
+# There is NO onEnd, as you can use the last event to execute commands when the countdown ends.
+
+# The events to be executed in the countdown, a step-by-step cycle.
+# eg, 0, 1, 2, 0, 1, 2, 0, 1, 2, ...
+# If there are multiple events, they will be executed in order.
+# Every time the plugin is loaded or reloaded, the countdown will start from the first event.
+events:
+  '0': # The ID of the event, recommend just use numbers
+    name: 'Hello, world!' # Display name
+    description: 'An example countdown event' # Description
+    # The commands to be executed when the countdown is triggered. Can be empty.
+    commands:
+      - "say Hello, world!"
+      - "say This is an example countdown."
+    # The broadcast messages when the countdown is triggered. Can be empty.
+    broadcast:
+      - "Hello, world!"
+      - "This is an example countdown."
