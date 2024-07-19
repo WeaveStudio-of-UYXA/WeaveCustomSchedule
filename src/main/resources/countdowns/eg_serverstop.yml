@@ -4,37 +4,39 @@
 # 30s later, the server will be ready to accept players.
 # Here we assume that a notification message is sent to the community.
 # If you have a similar plugin, you can try this.
-name: 'Server Start'
-callID: "serverstart"
-description: 'Make server start more interesting.'
-enable: false # just a sample, so will not disturb you
+name: 'Server Stop'
+callID: "stop"
+description: 'Give players a 60s countdown before the server stops.'
+enable: true
 startOnLoad: false
 startOnReload: false
-interval: 30
+interval: 60
 total: 1
 
 notice:
-  mode: "none" # this is a silent countdown
+  mode: "bossbar"
   colorbar:
-    - "#FF0000"
-    - "#FFFF00"
     - "#00FF00"
-  bossbarModeText: "Event #e in countdown #c has #s seconds left."
+    - "#FFFF00"
+    - "#FF0000"
+  bossbarModeText: "Server will stop in #s seconds."
   broadcastAndTitleModeText:
     '5': '5 seconds left'
     '4': '4 seconds left'
     '1': '1 second left'
 onStart:
   command:
-    console:
-      - "whitelist on"
+    console: []
     player: []
-  broadcast: []
+  broadcast:
+    - "Server will stop in 60 seconds."
+    - "Please prepare to leave the server."
 events:
   '0':
+    name: 'Server Stop'
+    description: 'Stop the server'
     command:
       console:
-        - "whitelist off"
-        - "some_robot_command Server started!"
+        - "stop"
       player: []
     broadcast: []

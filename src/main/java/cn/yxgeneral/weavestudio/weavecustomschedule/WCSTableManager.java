@@ -43,6 +43,7 @@ public class WCSTableManager {
         for (WCSCountdownObject countdown : CustomCountdowns){
             countdown.stop();
         }
+        CustomCountdowns.clear();
         if (forceClearCounter){
             CustomCountdownsTotalCountMap.clear();
             CustomCountdownsCurrentIndexMap.clear();

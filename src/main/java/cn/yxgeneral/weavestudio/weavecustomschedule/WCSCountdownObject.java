@@ -58,7 +58,7 @@ public class WCSCountdownObject {
 
             onStartConsoleCommands = yaml.getStringList("onStart.command.console");
             onStartPlayerCommands = yaml.getStringList("onStart.command.player");
-            onStartBroadcasts = yaml.getStringList("onStart.broadcasts");
+            onStartBroadcasts = yaml.getStringList("onStart.broadcast");
             Set<String> eventKeys = yaml.getConfigurationSection("events").getKeys(false);
             Events = new ArrayList<>();
             for (String eventKey : eventKeys) {

@@ -1,7 +1,7 @@
 config_version: "1.0" # DO NOT CHANGE THIS VALUE, IT IS USED TO CHECK THE CONFIG VERSION
 
 language: 'en_US'
-prefix: "&b[&aCustom Schedule&b] &7"
+prefix: "&b[&aCustom Schedule&b] &r"
 broadcast:
   # select in [vanilla, wcs]
   # vanilla: just like use /broadcast command, may be reloaded by other plugins such as EssentialsX

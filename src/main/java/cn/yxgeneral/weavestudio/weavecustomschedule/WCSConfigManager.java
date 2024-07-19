@@ -4,6 +4,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class WCSConfigManager {
@@ -18,6 +20,7 @@ public class WCSConfigManager {
         WeaveCustomSchedule.getInstance().saveResource("lang/zh_SC.yml", false);
         WeaveCustomSchedule.getInstance().saveResource("schedules/eg_schedule.yml", false);
         WeaveCustomSchedule.getInstance().saveResource("countdowns/eg_countdown.yml", false);
+        WeaveCustomSchedule.getInstance().saveResource("countdowns/eg_serverstop.yml", false);
         String langFileName = getConfig().getString("language");
         //check lang/langFileName.yml exists
         //if not, load lang/en_US.yml, else load lang/langFileName.yml
@@ -48,6 +51,15 @@ public class WCSConfigManager {
         }else{
             WeaveCustomSchedule.warning("Localized key name '" + key + "' not detected");
             return "";
+        }
+    }
+    public static List<String> getTranslationList(String key){
+        List<String> rtn = LanguageFile.getStringList(key);
+        if (rtn != null){
+            return LanguageFile.getStringList(key);
+        }else{
+            WeaveCustomSchedule.warning("Localized key name '" + key + "' not detected");
+            return new ArrayList<>();
         }
     }
     public static String getPluginPrefix(){

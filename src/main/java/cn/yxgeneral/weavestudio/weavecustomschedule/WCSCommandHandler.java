@@ -54,8 +54,9 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
                                     }
 
                                 }else{
-                                    String warning = WCSConfigManager.getTranslation("plugin.reloadWarning");
-                                    WCSInteractExecutor.gWarning(warning);
+                                    for (String warning : WCSConfigManager.getTranslationList("plugin.reloadWarning")) {
+                                        WCSInteractExecutor.gWarning(warning);
+                                    }
                                     WCSTimer.startReloadTimer();
                                 }
                                 break;
@@ -141,7 +142,7 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
         return null;
     }
     private void sendHelpMessage(CommandSender sender){
-        for(String line : WCSConfigManager.getConfig().getStringList("command.help")){
+        for(String line : WCSConfigManager.getTranslationList("command.help")){
             WCSInteractExecutor.gInfo(line);
         }
     }
