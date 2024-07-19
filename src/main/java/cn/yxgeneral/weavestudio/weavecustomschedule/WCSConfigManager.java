@@ -1,21 +1,21 @@
 package cn.yxgeneral.weavestudio.weavecustomschedule;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.util.ArrayList;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 
 public class WCSConfigManager {
-    public static String PluginPrefix = "";
+    private static String PluginPrefix = "";
+    private static Integer CountdownNotifierInterval = 5;
     private static YamlConfiguration LanguageFile = null;
-    public static void initConfig(){
+    private static String BroadcastMode = "wcs";
+    private static Boolean BroadcastWCSModeWithPrefix = true;
+    public static void initConfig(Boolean forceClearCountdown){
         WeaveCustomSchedule.getInstance().saveDefaultConfig();
         WeaveCustomSchedule.getInstance().saveResource("lang/en_US.yml", false);
+        WeaveCustomSchedule.getInstance().saveResource("lang/zh_SC.yml", false);
         WeaveCustomSchedule.getInstance().saveResource("schedules/eg_schedule.yml", false);
         WeaveCustomSchedule.getInstance().saveResource("countdowns/eg_countdown.yml", false);
         String langFileName = getConfig().getString("language");
@@ -26,12 +26,17 @@ public class WCSConfigManager {
             LanguageFile = YamlConfiguration.loadConfiguration(
                     new File(WeaveCustomSchedule.getInstance().getDataFolder(), "lang/en_US.yml")
             );
-            WeaveCustomSchedule.warning(getTranslation("plugin.noSuchLang".formatted(langFileName)));
+            WeaveCustomSchedule.warning(getTranslation("plugin.noSuchLang").formatted(langFileName));
         }else{
             LanguageFile = YamlConfiguration.loadConfiguration(langFile);
         }
         PluginPrefix = getConfig().getString("prefix");
+        CountdownNotifierInterval = getConfig().getInt("countdown.notifier.interval");
+        BroadcastMode = getConfig().getString("broadcast.mode");
+        BroadcastWCSModeWithPrefix = getConfig().getBoolean("broadcast.prefix");
         WCSTableManager.loadCustomSchedules();
+        WCSTableManager.loadCustomCountdowns(forceClearCountdown);
+
     }
     public static FileConfiguration getConfig(){
         return WeaveCustomSchedule.getInstance().getConfig();
@@ -41,27 +46,26 @@ public class WCSConfigManager {
         if (rtn != null){
             return LanguageFile.getString(key);
         }else{
-            WeaveCustomSchedule.getInstance().warning("Localized key name \'" + key + "\' not detected");
+            WeaveCustomSchedule.warning("Localized key name '" + key + "' not detected");
             return "";
         }
-
     }
-    public static void sendPrefixMessage(CommandSender sender, String message){
-        sender.sendMessage(PluginPrefix.replace("&", "§")+message.replace("&", "§"));
+    public static String getPluginPrefix(){
+        return PluginPrefix;
     }
-    public static void sendTranslatedMessage(CommandSender sender, String configNode, String... varargs){
-        sendPrefixMessage(sender, getTranslation(configNode).formatted((Object) varargs));
+    public static Integer getCountdownNotifierInterval(){
+        return CountdownNotifierInterval;
     }
-    public static void reloadConfig(){
+    public static String getBroadcastMode(){
+        return BroadcastMode;
+    }
+    public static Boolean isBroadcastWCSModeWithPrefix(){
+        return BroadcastWCSModeWithPrefix;
+    }
+    public static void reloadConfig(Boolean forceClearCountdown){
         WeaveCustomSchedule.getInstance().reloadConfig();
-        initConfig();
+        initConfig(forceClearCountdown);
+        WCSInteractExecutor.gInfo(WCSConfigManager.getTranslation("plugin.reloaded"));
     }
-    public static String applyPlaceHolder(String str, Player player){
-        str = str.replace("&", "§").replace("§§", "&");
-        if (WeaveCustomSchedule.PAPI){
-            return PlaceholderAPI.setPlaceholders(player, str);
-        }else{
-            return str;
-        }
-    }
+
 }

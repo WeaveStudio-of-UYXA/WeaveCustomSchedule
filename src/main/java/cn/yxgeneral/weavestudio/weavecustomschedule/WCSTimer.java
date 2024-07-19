@@ -1,17 +1,14 @@
 package cn.yxgeneral.weavestudio.weavecustomschedule;
 
 import java.time.*;
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 public class WCSTimer {
-    private BukkitTask RunningTimer = null;
-    private WCSTickLoop TimerTask = null;
-    public WCSTimer(){
-
-    }
-    public void start(){
+    private static BukkitTask RunningTimer = null;
+    private static WCSTickLoop TimerTask = null;
+    private static Integer ConfigReloadConfirmTick = 0;
+    public static void start(){
         TimerTask = new WCSTickLoop();
         LocalDateTime now = LocalDateTime.now();
         TimerTask.StartEpoch = System.currentTimeMillis();
@@ -25,10 +22,18 @@ public class WCSTimer {
                 WeaveCustomSchedule.getInstance(),  0, 1
         );
     }
-    public void stop(){
+    public static void stop(){
         RunningTimer.cancel();
     }
-    private class WCSTickLoop extends BukkitRunnable{
+    public static void startReloadTimer(){
+        ConfigReloadConfirmTick = 1;
+    }
+    public static boolean checkConfigReloadable(){
+        boolean rtn = ConfigReloadConfirmTick > 0 && ConfigReloadConfirmTick < 1200;
+        ConfigReloadConfirmTick = 0;
+        return rtn;
+    }
+    private static class WCSTickLoop extends BukkitRunnable{
         public Long StartEpoch;
         public LocalDateTime Now;
         public Long Duration;
@@ -42,17 +47,20 @@ public class WCSTimer {
         public Integer LastMinutes;
         @Override
         public void run() {
+            if (ConfigReloadConfirmTick!=0){
+               ConfigReloadConfirmTick++;
+               if (ConfigReloadConfirmTick >= 1200){
+                   ConfigReloadConfirmTick = 0;
+               }
+            }
             Long currentEpoch = System.currentTimeMillis();
             Duration = currentEpoch - StartEpoch;
             DurationPercent = Duration.doubleValue() / ActualMinutes;
             if (Duration >= ActualMinutes) {
                 DurationPercent = 1.0;
-                WeaveCustomSchedule.info("100%");
                 WCSTableManager.onTick(
                         Month, Day_week, Day_month, Hour, LastMinutes, DurationPercent
                 );
-                WeaveCustomSchedule.info(ActualMinutes.toString());
-                WeaveCustomSchedule.info(LastMinutes.toString());
                 ActualMinutes = 120000 - (currentEpoch - StartEpoch);
                 ActualMinutes = ActualMinutes<0L ? 100L : ActualMinutes;
                 ActualMinutes = ActualMinutes>60000L ? 60000L : ActualMinutes;

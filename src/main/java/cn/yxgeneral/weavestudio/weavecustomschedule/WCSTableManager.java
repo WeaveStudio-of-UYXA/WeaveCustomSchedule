@@ -28,14 +28,21 @@ public class WCSTableManager {
                 continue;
             }
             WCSScheduleObject obj = new WCSScheduleObject(ScheduleFile.getName());
-            String id = ScheduleFile.getName().substring(0, ScheduleFile.getName().lastIndexOf("."));
-            CustomSchedules.add(obj);
-            CustomSchedulesMap.put(id, obj);
+            if(obj.loadConfig()) {
+                if (CustomSchedulesMap.containsKey(obj.getCallID())){
+                    WeaveCustomSchedule.warning("Duplicate schedule callID: " + obj.getCallID());
+                }else {
+                    CustomSchedules.add(obj);
+                    CustomSchedulesMap.put(obj.getCallID(), obj);
+                }
+            }
         }
     }
     protected static void loadCustomCountdowns(Boolean forceClearCounter){
         CustomCountdownsMap.clear();
-        CustomCountdowns.clear();
+        for (WCSCountdownObject countdown : CustomCountdowns){
+            countdown.stop();
+        }
         if (forceClearCounter){
             CustomCountdownsTotalCountMap.clear();
             CustomCountdownsCurrentIndexMap.clear();
@@ -51,18 +58,36 @@ public class WCSTableManager {
                 continue;
             }
             WCSCountdownObject obj = new WCSCountdownObject(CountdownFile.getName());
-            CustomCountdowns.add(obj);
-            CustomCountdownsMap.put(obj.getCallID(), obj);
-            if (!CustomCountdownsTotalCountMap.containsKey(obj.getCallID())) {
-                CustomCountdownsTotalCountMap.put(obj.getCallID(), 0);
-                CustomCountdownsCurrentIndexMap.put(obj.getCallID(), 0);
+            if (obj.loadConfig()) {
+                if (CustomCountdownsMap.containsKey(obj.getCallID())){
+                    WeaveCustomSchedule.warning("Duplicate countdown callID: " + obj.getCallID());
+                }else {
+                    CustomCountdowns.add(obj);
+                    CustomCountdownsMap.put(obj.getCallID(), obj);
+                    if (!CustomCountdownsTotalCountMap.containsKey(obj.getCallID())) {
+                        CustomCountdownsTotalCountMap.put(obj.getCallID(), 0);
+                        CustomCountdownsCurrentIndexMap.put(obj.getCallID(), 0);
+                    }
+                }
             }
         }
+    }
+    public static ArrayList<String> getScheduleIDList(){
+        return new ArrayList<>(CustomSchedulesMap.keySet());
+    }
+    public static ArrayList<String> getCountdownIDList(){
+        return new ArrayList<>(CustomCountdownsMap.keySet());
     }
     public static void updateCountdownAvailablePlayers(){
         for (WCSCountdownObject countdown : CustomCountdowns){
             countdown.updateAvailablePlayer();
         }
+    }
+    public static boolean isCountdownIDExist(String id){
+        return CustomCountdownsMap.containsKey(id);
+    }
+    public static boolean isScheduleIDExist(String id){
+        return CustomSchedulesMap.containsKey(id);
     }
     public static void setScheduleEnable(String id, Boolean enable){
         if (CustomSchedulesMap.containsKey(id)){
@@ -78,7 +103,38 @@ public class WCSTableManager {
             WeaveCustomSchedule.warning("No such countdown id: " + id);
         }
     }
-
+    public static void setCountdownRunning(String id, Boolean running){
+        if (CustomCountdownsMap.containsKey(id)){
+            if (running){
+                CustomCountdownsMap.get(id).start();
+            }else{
+                CustomCountdownsMap.get(id).stop();
+            }
+        }else{
+            WeaveCustomSchedule.warning("No such countdown id: " + id);
+        }
+    }
+    public static void pauseCountdown(String id){
+        if (CustomCountdownsMap.containsKey(id)){
+            CustomCountdownsMap.get(id).pause();
+        }else{
+            WeaveCustomSchedule.warning("No such countdown id: " + id);
+        }
+    }
+    public static void printCountdownStatus(){
+        for(WCSCountdownObject countdown : CustomCountdowns){
+            if (countdown.isEnable()){
+                WCSInteractExecutor.gInfo(countdown.getCallID() + " " + countdown.getName());
+            }
+        }
+    }
+    public static void printScheduleStatus(){
+        for(WCSScheduleObject schedule : CustomSchedules){
+            if (schedule.isEnable()){
+                WCSInteractExecutor.gInfo(schedule.getCallID() + " " + schedule.getName());
+            }
+        }
+    }
     protected static void countdownCurrentTotalRecord(String countdownCallID){
         if (CustomCountdownsTotalCountMap.containsKey(countdownCallID)){
             CustomCountdownsTotalCountMap.put(countdownCallID, CustomCountdownsTotalCountMap.get(countdownCallID) + 1);

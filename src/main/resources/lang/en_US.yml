@@ -5,22 +5,51 @@
 # officially support these languages at any time, and then cause the official translation
 # to cover your own translation files. Such as 'my_en_US.yml'
 plugin:
-  reload: "Plugin config reloaded."
+  loaded: "Plugin loaded."
+  reloaded: "Plugin config reloaded."
   reloadWarning: 
    - "Are you sure you want to reload? If there is still unfinished content "
    - "in the current minute, they will NOT be executed and will RESTART"
    - "immediately after overloading. It is strongly recommended that reload ONLY"
    - "when you are sure there is no content to be executed in the current minute."
    - "If you are sure, please use reload command again to confirm."
-schedule:
-  loaded: "Schedule &a@s &7loaded"
-  loadFailed: "Failed to load schedule &a@s, &7may have syntax error"
-  loadButDisabled: "Schedule &a@s &7loaded but disabled, it will not be executed"
-  executed: "Event &a@e &7 in schedule &a@s &7executed"
+   - "Expired time is 60 seconds."
+  reloadConfirmOutdated: "Reload confirm outdated. "
+  noPermission: "You do not have permission to use this command."
+  noSuchCountdown: "No such countdown."
+  noSuchSchedule: "No such schedule."
+command:
+  help:
+    - "Weave Custom Schedule Command Help"
+    - "/wcs - Display help"
+    - "/wcs reload [force] - Reload plugin config"
+    - " - force: Also clear the countdown cache and start from scratch"
+    - "/wcs countdown <id> <action> - Operate countdown"
+    - " - id: Countdown call ID"
+    - " - action: start, stop, pause, enable, disable"
+    - "/wcs schedule <id> <action> - Operate schedule"
+    - " - id: Schedule call ID"
+    - " - action: enable, disable"
+    - "/wcs dashboard <type> - Open dashboard"
+    - " - type: countdown, schedule, all"
 countdown:
-  loaded: "Countdown &a@c &7loaded"
-  loadFailed: "Failed to load countdown &a@c, &7may have syntax error"
+  loaded: "Countdown &a#c &7loaded"
+  loadFailed: "Failed to load countdown &a#c, &7may have syntax error"
   started: "Countdown &a@c &7started, will be executed in @s%s"
-  executed: "Event &a@e &7 in countdown &a@c &7executed"
+  executed: "Event &a#e &7 in countdown &a#c &7executed"
+  enable: "Countdown &a#c &7enabled"
+  disable: "Countdown &a#c &7disabled"
+  start: "Countdown &a#c &7started"
+  stop: "Countdown &a#c &7stopped"
+  pause: "Countdown &a#c &7paused"
+
+schedule:
+  loaded: "Schedule &a#s &7loaded"
+  loadFailed: "Failed to load schedule &a#s, &7may have syntax error"
+  loadButDisabled: "Schedule &a#s &7loaded but disabled, it will not be executed"
+  executed: "Event &a#e &7 in schedule &a#s &7executed"
+  enable: "Schedule &a#s &7enabled"
+  disable: "Schedule &a#s &7disabled"
+
 
 

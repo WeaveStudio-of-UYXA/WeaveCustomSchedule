@@ -1,6 +1,8 @@
 package cn.yxgeneral.weavestudio.weavecustomschedule;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import java.time.DayOfWeek;
 import java.time.Month;
@@ -8,6 +10,8 @@ import java.util.List;
 import java.util.regex.*;
 
 public class WCSSingleScheduleEvent {
+    private String ScheduleID;
+    private String ScheduleName;
     private String EventName;
     private String EventID;
     private String Rule_HM;
@@ -15,28 +19,18 @@ public class WCSSingleScheduleEvent {
     private String Rule_Month;
     private Integer LastMinute = -1;
     private Boolean Rule_Immediate;
-    private List<String> ScheduleCommands;
+    private List<String> ScheduleConsoleCommands;
+    private List<String> SchedulePlayerCommands;
     private List<String> ScheduleBroadcasts;
-    private Integer LastCommandIndex = -1;
+    private Integer LastConsoleCommandIndex = -1;
+    private Integer LastPlayerCommandIndex = -1;
     private Boolean NeedExecute = false;
 
-    public WCSSingleScheduleEvent(String id, ConfigurationSection config){
-        EventID = id;
+    public WCSSingleScheduleEvent(String scheduleID, String scheduleName, String eventId, ConfigurationSection config){
+        ScheduleID = scheduleID;
+        ScheduleName = scheduleName;
+        EventID = eventId;
         initFromConfig(config);
-    }
-    public WCSSingleScheduleEvent(String id){
-        EventID = id;
-    }
-    public void initFromManual(String eventName, String rule_day, String rule_HHMM,
-                               String rule_month, Boolean rule_immediate, List<String> commands,
-                                List<String> broadcasts){
-        EventName = eventName;
-        Rule_Day = rule_day;
-        Rule_HM = rule_HHMM;
-        Rule_Month = rule_month;
-        Rule_Immediate = rule_immediate;
-        ScheduleCommands = commands;
-        ScheduleBroadcasts = broadcasts;
     }
     public void initFromConfig(ConfigurationSection config){
         EventName = config.getString("name");
@@ -44,8 +38,9 @@ public class WCSSingleScheduleEvent {
         Rule_HM = config.getString("rule.HHMM");
         Rule_Month = config.getString("rule.month");
         Rule_Immediate = config.getBoolean("rule.immediate");
-        ScheduleCommands = config.getStringList("commands");
-        ScheduleBroadcasts = config.getStringList("broadcasts");
+        ScheduleConsoleCommands = config.getStringList("command.console");
+        SchedulePlayerCommands = config.getStringList("command.player");
+        ScheduleBroadcasts = config.getStringList("broadcast");
     }
     public String getEventName(){
         return EventName;
@@ -58,29 +53,47 @@ public class WCSSingleScheduleEvent {
         if (needExecute(month, week_day, month_day, hour, minute)){
             executeBroadcast();
             if (Rule_Immediate){
-                if (LastCommandIndex==-1) {
-                    for (String command : ScheduleCommands) {
-                        executeCommand(command);
+                if (LastConsoleCommandIndex ==-1) {
+                    for (String command : ScheduleConsoleCommands) {
+                        WCSInteractExecutor.consoleExecuteCommand(applyPlaceHolder(command));
                     }
-                    LastCommandIndex = ScheduleCommands.size() - 1;
+                    LastConsoleCommandIndex = ScheduleConsoleCommands.size() - 1;
+                }
+                if (LastPlayerCommandIndex ==-1) {
+                    for (String command : SchedulePlayerCommands) {
+                        executePlayerCommand(command);
+                    }
+                    LastPlayerCommandIndex = SchedulePlayerCommands.size() - 1;
                 }
             } else {
-                Integer CurrentCommandIndex;
+                Integer CurrentConsoleCommandIndex;
                 if (percent < 1) {
-                    CurrentCommandIndex = ((Double) (percent * ScheduleCommands.size())).intValue();
+                    CurrentConsoleCommandIndex = ((Double) (percent * ScheduleConsoleCommands.size())).intValue();
                 } else {
-                    CurrentCommandIndex = ScheduleCommands.size() - 1;
+                    CurrentConsoleCommandIndex = ScheduleConsoleCommands.size() - 1;
                 }
-                if (CurrentCommandIndex > LastCommandIndex) {
-                    for (int i = LastCommandIndex + 1; i <= CurrentCommandIndex; i++) {
-                        executeCommand(ScheduleCommands.get(i));
+                if (CurrentConsoleCommandIndex > LastConsoleCommandIndex) {
+                    for (int i = LastConsoleCommandIndex + 1; i <= CurrentConsoleCommandIndex; i++) {
+                        WCSInteractExecutor.consoleExecuteCommand(applyPlaceHolder(ScheduleConsoleCommands.get(i)));
                     }
-                    LastCommandIndex = CurrentCommandIndex;
+                    LastConsoleCommandIndex = CurrentConsoleCommandIndex;
                 }
-
+                Integer CurrentPlayerCommandIndex;
+                if (percent < 1) {
+                    CurrentPlayerCommandIndex = ((Double) (percent * SchedulePlayerCommands.size())).intValue();
+                } else {
+                    CurrentPlayerCommandIndex = SchedulePlayerCommands.size() - 1;
+                }
+                if (CurrentPlayerCommandIndex > LastPlayerCommandIndex) {
+                    for (int i = LastPlayerCommandIndex + 1; i <= CurrentPlayerCommandIndex; i++) {
+                        executePlayerCommand(SchedulePlayerCommands.get(i));
+                    }
+                    LastPlayerCommandIndex = CurrentPlayerCommandIndex;
+                }
             }
             if (percent >= 1.0) {
-                LastCommandIndex = -1;
+                LastConsoleCommandIndex = -1;
+                LastPlayerCommandIndex = -1;
             }
         }
         return true;
@@ -138,16 +151,36 @@ public class WCSSingleScheduleEvent {
         }
         return NeedExecute;
     }
-    private Boolean executeCommand(String command){
-        WCSInteractiveExecutor.consoleExecuteCommand(command);
-        return true;
+    private void executePlayerCommand(String command){
+        for(Player player : WeaveCustomSchedule.getInstance().getServer().getOnlinePlayers()){
+            if (WCSPermission.beConsideredBySchedule(player, ScheduleID)){
+                WCSInteractExecutor.playerExecuteCommand(player, applyPlaceHolder(command));
+            }
+        }
     }
     private Boolean executeBroadcast(){
-        if (LastCommandIndex==-1){
-            for(String msg : ScheduleBroadcasts) {
-                WCSInteractiveExecutor.broadcast(msg);
+        if (LastConsoleCommandIndex ==-1){
+            if (WCSConfigManager.getBroadcastMode().equals("vanilla")){
+                for (String broadcast : ScheduleBroadcasts){
+                    WCSInteractExecutor.vanillaBroadcast(applyPlaceHolder(broadcast));
+                }
+            } else {
+                for (Player player : WeaveCustomSchedule.getInstance().getServer().getOnlinePlayers()){
+                    if (WCSPermission.beConsideredBySchedule(player, ScheduleID)){
+                        for (String broadcast : ScheduleBroadcasts){
+                            if (WCSConfigManager.isBroadcastWCSModeWithPrefix()){
+                                WCSInteractExecutor.sendPrefixMessage(player, applyPlaceHolder(broadcast));
+                            } else {
+                                WCSInteractExecutor.sendNormalMessage(player, applyPlaceHolder(broadcast));
+                            }
+                        }
+                    }
+                }
             }
         }
         return true;
+    }
+    private String applyPlaceHolder(String str){
+        return str.replace("#s", ScheduleName).replace("#e", EventName);
     }
 }

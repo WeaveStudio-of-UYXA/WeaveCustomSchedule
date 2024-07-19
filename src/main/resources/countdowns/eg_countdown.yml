@@ -3,12 +3,19 @@ name: 'Example Countdown'
 # Advise 0-9, A-Z, a-z, and _ only, do not contain spaces or special characters.
 callID: "cd1"
 description: 'An example Countdown'
-enable: false
-startOnLoad: false # Whether to start the countdown when the server is loaded
+enable: true # Whether to enable the countdown
+startOnLoad: true # Whether to start the countdown when the server is loaded
+startOnReload: true # Whether to start the countdown when the plugin is reloaded
 # The time interval between each countdown, in seconds
-interval: 10
+interval: 20
 # The total number of countdowns, 0 or less means infinite
-total: 1
+total: 0
+
+# Available plugin-placeholder in countdown configuration:
+#   #c: Countdown Name
+#   #s: Seconds left
+#   #e: Event Name
+# PlaceholderAPI supported.
 
 notice:
   # select in [bossbar, broadcast, title, none]
@@ -18,12 +25,21 @@ notice:
   # And broadcast mode may be ignored by some players.
   # So generally we recommend using bossbar mode.
   mode: "bossbar"
+  # Color of the text in the bossbar, broadcast, and title mode.
   # 100% -> 0%
+  # NOTICE: The color of the bossbar itself cannot be customized, we use this rule:
+  # >= 75% -> Blue
+  # >= 50% -> Green
+  # >= 25% -> Yellow
+  # < 25% -> Red
   colorbar:
-    - "#FF0000"
-    - "#FFFF00"
     - "#00FF00"
-  bossbarModeText: "Event @e in countdown @c has @s seconds left."
+    - "#FFFF00"
+    - "#FF0000"
+
+  bossbarModeText: "Event #e in countdown #c has #s seconds left."
+  # If title mode is selected, the text will be displayed in the subtitle.
+  # The title will display the next event name.
   broadcastAndTitleModeText:
     '5': '5 seconds left'
     '4': '4 seconds left'
@@ -31,8 +47,10 @@ notice:
 
 # The commands to be executed when the countdown starts. Can be empty.
 onStart:
-  commands:
-    - "say Countdown started!"
+  command:
+    console:
+      - "say Countdown started!"
+    player: []
   broadcast:
     - "Countdown started!"
 # There is NO onEnd, as you can use the last event to execute commands when the countdown ends.
@@ -46,10 +64,19 @@ events:
     name: 'Hello, world!' # Display name
     description: 'An example countdown event' # Description
     # The commands to be executed when the countdown is triggered. Can be empty.
-    commands:
-      - "say Hello, world!"
-      - "say This is an example countdown."
+    command:
+      console:
+        - "say Hello, world!"
+      player: []
     # The broadcast messages when the countdown is triggered. Can be empty.
-    broadcast:
+    broadcast: 
       - "Hello, world!"
-      - "This is an example countdown."
+  '1':
+    name: 'GoodNight, world!'
+    description: 'An example countdown event'
+    command:
+      console:
+        - "say GoodNight, world!"
+      player: []
+    broadcast: 
+      - "GoodNight, world!"

@@ -1,11 +1,20 @@
-config_version: "1.0" # DO NOT CHANGE THIS VALUE
+config_version: "1.0" # DO NOT CHANGE THIS VALUE, IT IS USED TO CHECK THE CONFIG VERSION
 
 language: 'en_US'
 prefix: "&b[&aCustom Schedule&b] &7"
-debugPrint:
-  eventExecuted:
-    Console: true
-    Player: true
-  timerLoop:
-    Console: true
-    Player: true
+broadcast:
+  # select in [vanilla, wcs]
+  # vanilla: just like use /broadcast command, may be reloaded by other plugins such as EssentialsX
+  # wcs: use the broadcast function of the plugin itself, will not be reloaded by other plugins.
+  #      Also, wcs mode means broadcast can be affected by permission 
+  #          'weavecustomshedule.countdown/schedule.consider.id'
+  #      If the player does not have the permission, the broadcast will not be sent to the player.
+  # other values will be treated as 'wcs'
+  mode: "wcs"
+  # when mode is wcs, you can set whether to use the prefix
+  prefix: true
+
+countdown:
+  notifier:
+    interval: 5 # tick, 20 ticks = 1 second, recommended value: 5
+

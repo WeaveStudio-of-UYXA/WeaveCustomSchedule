@@ -1,6 +1,14 @@
 name: 'Example Schedule'
+callID: "eg_schedule"
 description: 'An example schedule'
 enable: true
+
+# Available plugin-placeholder in schedule configuration:
+#   #s: Schedule Name
+#   #e: Event Name
+# PlaceholderAPI supported.
+# NOTICE: Plugin never calculates the time of the next event in advance, 
+#         so no countdown placeholder is available
 
 # You can have multiple schedules in one file.
 events:
@@ -34,9 +42,11 @@ events:
       # Eg, this schedule will be executed in the first 9 months of each year.
       month: '1, 2, 3, 4, 5, 6, 7, 8, 9'
     # The commands to be executed when the schedule is triggered. Can be empty.
-    commands:
-      - "say Hello, world!"
-      - "say This is an example schedule."
+    command:
+      console:
+        - "say Hello, world!"
+        - "say This is an example schedule."
+      player: []
     broadcast:
       - "Hello, world!"
       - "This is an example schedule."

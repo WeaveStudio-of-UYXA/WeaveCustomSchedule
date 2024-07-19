@@ -8,7 +8,8 @@ name: 'Server Start'
 callID: "serverstart"
 description: 'Make server start more interesting.'
 enable: false # just a sample, so will not disturb you
-startOnLoad: true
+startOnLoad: false
+startOnReload: false
 interval: 30
 total: 1
 
@@ -18,18 +19,22 @@ notice:
     - "#FF0000"
     - "#FFFF00"
     - "#00FF00"
-  bossbarModeText: "Event @e in countdown @c has @s seconds left."
+  bossbarModeText: "Event #e in countdown #c has #s seconds left."
   broadcastAndTitleModeText:
     '5': '5 seconds left'
     '4': '4 seconds left'
     '1': '1 second left'
 onStart:
-  commands:
-    - "whitelist on"
+  command:
+    console:
+      - "whitelist on"
+    player: []
   broadcast: []
 events:
   '0':
-    commands:
-      - "whitelist off"
-      - "some_robot_command Server started!"
+    command:
+      console:
+        - "whitelist off"
+        - "some_robot_command Server started!"
+      player: []
     broadcast: []

@@ -8,7 +8,7 @@ public final class WeaveCustomSchedule extends JavaPlugin {
     static boolean PAPI = false;
     static WCSCommandHandler CHandler = null;
     static WCSEventHandler EHandler = null;
-    static WCSTimer Timer = null;
+    static boolean JustStarted = true;
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -25,9 +25,13 @@ public final class WeaveCustomSchedule extends JavaPlugin {
         Bukkit.getPluginCommand("weavecustomschedule").setTabCompleter(CHandler);
         EHandler = new WCSEventHandler();
         Bukkit.getPluginManager().registerEvents(EHandler, this);
-        WCSConfigManager.initConfig();
-        Timer = new WCSTimer();
-        Timer.start();
+        WCSConfigManager.initConfig(false);
+        WCSTimer.start();
+        JustStarted = false;
+        WCSInteractExecutor.gInfo(WCSConfigManager.getTranslation("plugin.loaded"));
+    }
+    public static boolean isJustStarted(){
+        return JustStarted;
     }
 
     @Override
