@@ -8,13 +8,18 @@ startOnLoad: true # Whether to start the countdown when the server is loaded
 startOnReload: true # Whether to start the countdown when the plugin is reloaded
 # The time interval between each countdown, in seconds
 interval: 20
-# The total number of countdowns, 0 or less means infinite
+# The total cycle of the countdown, 0 means infinite
 total: 0
 
 # Available plugin-placeholder in countdown configuration:
 #   #c: Countdown Name
+#   #e: Next or current event name
 #   #s: Seconds left
-#   #e: Event Name
+#   #i: Interval
+#   #tt: Total cycle of the countdown
+#   #tr: Remaining cycle of the countdown
+#   #etn: Total number of countdown events
+#   #eix: Next or current countdown event index
 # PlaceholderAPI supported.
 
 notice:

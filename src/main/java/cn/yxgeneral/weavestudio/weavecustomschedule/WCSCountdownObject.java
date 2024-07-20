@@ -51,7 +51,7 @@ public class WCSCountdownObject {
                 broadcastAndTitleModeText.put(Integer.parseInt(key), yaml.getString("notice.broadcastAndTitleModeText." + key));
             }
 
-            Notifier = new WCSCountdownNotifier(CountdownName, CallID, noticeColorBar);
+            Notifier = new WCSCountdownNotifier(this, noticeColorBar);
             Notifier.setNoticeMode(NoticeMode);
             Notifier.setBossbarModeText(bossbarModeText);
             Notifier.setBroadcastAndTitleModeText(broadcastAndTitleModeText);
@@ -62,15 +62,15 @@ public class WCSCountdownObject {
             Set<String> eventKeys = yaml.getConfigurationSection("events").getKeys(false);
             Events = new ArrayList<>();
             for (String eventKey : eventKeys) {
-                Events.add(new WCSSingleCountdownEvent(eventKey, yaml.getConfigurationSection("events." + eventKey)));
+                Events.add(new WCSSingleCountdownEvent(this, eventKey, yaml.getConfigurationSection("events." + eventKey)));
             }
-            WCSInteractExecutor.gInfo(WCSConfigManager.getTranslation("countdown.loaded").replace("#c", CountdownName));
+            WCSInteractExecutor.gInfo(applyPlaceHolders(WCSConfigManager.getTranslation("countdown.loaded")));
             if (StartOnLoad && WeaveCustomSchedule.isJustStarted() || StartOnReload){
                 start();
             }
             return true;
         }catch (Exception e){
-            WCSInteractExecutor.gWarning(WCSConfigManager.getTranslation("countdown.loadFailed").replace("#c", ConfigFileName));
+            WCSInteractExecutor.gWarning(applyPlaceHolders(WCSConfigManager.getTranslation("countdown.loadFailed")));
             return false;
         }
     }
@@ -108,25 +108,25 @@ public class WCSCountdownObject {
     }
     private void onStart(){
         for (String command : onStartConsoleCommands){
-            WCSInteractExecutor.consoleExecuteCommand(command);
+            WCSInteractExecutor.consoleExecuteCommand(applyPlaceHolders(command));
         }
         for (Player player : WeaveCustomSchedule.getInstance().getServer().getOnlinePlayers()){
             if (WCSPermission.beConsideredByCountdown(player, CallID)){
                 for (String command : onStartPlayerCommands){
-                    WCSInteractExecutor.playerExecuteCommand(player, command);
+                    WCSInteractExecutor.playerExecuteCommand(player, applyPlaceHolders(command));
                 }
             }
         }
         for (String broadcast : onStartBroadcasts){
             if (WCSConfigManager.getBroadcastMode().equals("vanilla")) {
-                WCSInteractExecutor.vanillaBroadcast(broadcast);
+                WCSInteractExecutor.vanillaBroadcast(applyPlaceHolders(broadcast));
             } else {
                 for (Player player : WeaveCustomSchedule.getInstance().getServer().getOnlinePlayers()) {
                     if (WCSPermission.beConsideredByCountdown(player, CallID)) {
                         if (WCSConfigManager.isBroadcastWCSModeWithPrefix()) {
-                            WCSInteractExecutor.sendPrefixMessage(player, broadcast);
+                            WCSInteractExecutor.sendPrefixMessage(player, applyPlaceHolders(broadcast));
                         } else {
-                            WCSInteractExecutor.sendNormalMessage(player, broadcast);
+                            WCSInteractExecutor.sendNormalMessage(player, applyPlaceHolders(broadcast));
                         }
                     }
                 }
@@ -148,14 +148,26 @@ public class WCSCountdownObject {
             WCSTableManager.countdownCurrentIndexRecord(CallID);
             if (WCSTableManager.getCountdownCurrentIndex(CallID) >= Events.size()){
                 WCSTableManager.countdownResetCurrentIndexRecord(CallID);
-                WCSTableManager.countdownCurrentTotalRecord(CallID);
                 if (TotalCount<=0){
                     return;
                 }
+                WCSTableManager.countdownCurrentTotalRecord(CallID);
                 if (WCSTableManager.getCountdownCurrentTotal(CallID) >= TotalCount){
                     stop();
                 }
             }
         }
+    }
+    public String applyPlaceHolders(String msg){
+        return msg
+                .replace("#c", CountdownName)
+                .replace("#e", Events.get(WCSTableManager.getCountdownCurrentIndex(CallID)).getEventName())
+                .replace("#s", "%.2f".formatted((double)(Interval - CurrentTick) / 20))
+                .replace("#i", Interval.toString())
+                .replace("#tt", TotalCount.toString())
+                .replace("#tr", ((Integer)(TotalCount-WCSTableManager.getCountdownCurrentTotal(CallID))).toString())
+                .replace("#etn", ((Integer)Events.size()).toString())
+                .replace("#eix", ((Integer)(WCSTableManager.getCountdownCurrentIndex(CallID)+1)).toString())
+                ;
     }
 }

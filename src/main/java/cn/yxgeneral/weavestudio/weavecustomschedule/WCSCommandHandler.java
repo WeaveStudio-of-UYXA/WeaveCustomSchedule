@@ -52,7 +52,6 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
                                     } else if (argLength == 2 && args[1].equalsIgnoreCase("force")) {
                                         WCSConfigManager.reloadConfig(true);
                                     }
-
                                 }else{
                                     for (String warning : WCSConfigManager.getTranslationList("plugin.reloadWarning")) {
                                         WCSInteractExecutor.gWarning(warning);
@@ -191,7 +190,7 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
     }
     private void handleScheduleAction(CommandSender sender,String id, String action){
         if (!WCSTableManager.isScheduleIDExist(id)){
-            WCSInteractExecutor.gWarning(WCSConfigManager.getTranslation("plugin.noSuchSchedule").replace("#e",id));
+            WCSInteractExecutor.gWarning(WCSConfigManager.getTranslation("plugin.noSuchSchedule").replace("#s",id));
             return;
         }
         switch (action){

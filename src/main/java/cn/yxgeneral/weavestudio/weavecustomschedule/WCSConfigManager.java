@@ -55,7 +55,7 @@ public class WCSConfigManager {
     }
     public static List<String> getTranslationList(String key){
         List<String> rtn = LanguageFile.getStringList(key);
-        if (rtn != null){
+        if (!rtn.isEmpty()){
             return LanguageFile.getStringList(key);
         }else{
             WeaveCustomSchedule.warning("Localized key name '" + key + "' not detected");

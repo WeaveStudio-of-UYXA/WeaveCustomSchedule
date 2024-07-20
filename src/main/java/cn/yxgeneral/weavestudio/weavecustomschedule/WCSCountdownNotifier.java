@@ -10,8 +10,7 @@ import java.util.*;
 
 
 public class WCSCountdownNotifier {
-    private final String CountdownName;
-    private final String CallID;
+    private final WCSCountdownObject ParentCountdown;
     private final List<Color> ColorBar = new ArrayList<>();
     private final List<Player> AvailablePlayers = new ArrayList<>();
     private String NoticeMode;
@@ -21,9 +20,8 @@ public class WCSCountdownNotifier {
     private Integer LastTextIndex = 0;
     private BossBar bossBar = null;
     private Integer CurrentTick = 0;
-    public WCSCountdownNotifier(String countdownName, String callID, List<String> colorBar){
-        CountdownName = countdownName;
-        CallID = callID;
+    public WCSCountdownNotifier(WCSCountdownObject parentCountdown, List<String> colorBar){
+        ParentCountdown = parentCountdown;
         for (String color : colorBar){
             if (color.startsWith("#")){
                 color = color.substring(1);
@@ -70,7 +68,7 @@ public class WCSCountdownNotifier {
         //get All online player
         AvailablePlayers.clear();
         for(Player player : WeaveCustomSchedule.getInstance().getServer().getOnlinePlayers()){
-            if (WCSPermission.receiveCountdown(player, CallID)){
+            if (WCSPermission.receiveCountdown(player, ParentCountdown.getCallID())){
                 AvailablePlayers.add(player);
             }
         }
@@ -111,17 +109,25 @@ public class WCSCountdownNotifier {
         CurrentTick += 1;
         if (CurrentTick >= WCSConfigManager.getCountdownNotifierInterval()){
             CurrentTick = 0;
-            if ("none".equals(NoticeMode)){
-                return;
-            }else if ("bossbar".equals(NoticeMode)) {
-                updateBossbar(nextEventName, currentTick, totalTick);
-            }else if ("broadcast".equals(NoticeMode) || "title".equals(NoticeMode)){
-                checkBroadcastAndTitleModeCountdownIndex(nextEventName, currentTick, totalTick);
+            switch (NoticeMode){
+                case "none":
+                    return;
+                case "bossbar":
+                    updateBossbar(currentTick, totalTick);
+                    break;
+                case "broadcast":
+                case "title":
+                    checkBroadcastAndTitleModeCountdownIndex(nextEventName, currentTick, totalTick);
+                    break;
+                case "all":
+                    updateBossbar(currentTick, totalTick);
+                    checkBroadcastAndTitleModeCountdownIndex(nextEventName, currentTick, totalTick);
+                    break;
             }
         }
     }
     public void checkBroadcastAndTitleModeCountdownIndex(String nextEventName, Integer currentTick, Integer totalTick){
-        Double seconds = (double)(totalTick - currentTick) / 20;
+        double seconds = (double)(totalTick - currentTick) / 20;
         if (seconds > BroadcastAndTitleModeTextKeys.getFirst()){
             LastTextIndex = 0;
             return;
@@ -132,20 +138,20 @@ public class WCSCountdownNotifier {
         if (seconds<=BroadcastAndTitleModeTextKeys.get(LastTextIndex)){
             int index = BroadcastAndTitleModeTextKeys.get(LastTextIndex);
             String msg = WCSUtils.getMCColorString(getColor(1.0-(double)currentTick / totalTick)) +
-                    applyPlaceHolder(BroadcastAndTitleModeText.get(index), nextEventName, seconds);
+                    ParentCountdown.applyPlaceHolders(BroadcastAndTitleModeText.get(index));
             if ("broadcast".equals(NoticeMode)){
                 for (Player player : AvailablePlayers){
-                    WCSInteractExecutor.sendPrefixMessage(player, msg);
+                    WCSInteractExecutor.sendPrefixMessage(player, ParentCountdown.applyPlaceHolders(msg));
                 }
             }else if ("title".equals(NoticeMode)){
                 for (Player player : AvailablePlayers){
-                    WCSInteractExecutor.displayTitle(player, nextEventName , msg, 20, 20, 5);
+                    WCSInteractExecutor.displayTitle(player, nextEventName , ParentCountdown.applyPlaceHolders(msg), 20, 20, 5);
                 }
             }
             LastTextIndex += 1;
         }
     }
-    public void updateBossbar(String nextEventName, Integer currentTick, Integer totalTick){
+    public void updateBossbar(Integer currentTick, Integer totalTick){
         if (bossBar == null){
             return;
         }
@@ -153,12 +159,7 @@ public class WCSCountdownNotifier {
         bossBar.setColor(getBarColor(1.0-(double)currentTick / totalTick));
         Double seconds = (double)(totalTick - currentTick) / 20;
         String msg = WCSUtils.getMCColorString(getColor(1.0-(double)currentTick / totalTick)) +
-                        applyPlaceHolder(BossbarModeText, nextEventName, seconds);
+                        ParentCountdown.applyPlaceHolders(BossbarModeText);
         bossBar.setTitle(msg);
-    }
-    private String applyPlaceHolder(String msg, String nextEventName, Double seconds){
-        return msg.replace("#c", CountdownName)
-                .replace("#e", nextEventName)
-                .replace("#s", String.format("%.2f", seconds));
     }
 }

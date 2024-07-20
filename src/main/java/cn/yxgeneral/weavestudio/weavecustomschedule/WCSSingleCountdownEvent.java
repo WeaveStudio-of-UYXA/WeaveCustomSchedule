@@ -6,13 +6,15 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 public class WCSSingleCountdownEvent {
+    private final WCSCountdownObject ParentCountdown;
     protected String EventID;
     protected String EventName;
     protected String Description;
     protected List<String> ConsoleCommands;
     protected List<String> PlayerCommands;
     protected List<String> Broadcasts;
-    WCSSingleCountdownEvent(String id, ConfigurationSection config){
+    WCSSingleCountdownEvent(WCSCountdownObject parentCountdown,String id, ConfigurationSection config){
+        ParentCountdown = parentCountdown;
         EventID = id;
         initFromConfig(config);
     }
@@ -35,12 +37,12 @@ public class WCSSingleCountdownEvent {
     }
     private void executeCommands(){
         for (String command : ConsoleCommands){
-            WCSInteractExecutor.consoleExecuteCommand(command);
+            WCSInteractExecutor.consoleExecuteCommand(ParentCountdown.applyPlaceHolders(command));
         }
         for (Player p: WeaveCustomSchedule.getInstance().getServer().getOnlinePlayers()){
             if (WCSPermission.beConsideredByCountdown(p, EventID)) {
                 for (String command : PlayerCommands) {
-                    WCSInteractExecutor.playerExecuteCommand(p, command);
+                    WCSInteractExecutor.playerExecuteCommand(p, ParentCountdown.applyPlaceHolders(command));
                 }
             }
         }
@@ -48,16 +50,16 @@ public class WCSSingleCountdownEvent {
     private void executeBroadcast(){
         if (WCSConfigManager.getBroadcastMode().equals("vanilla")) {
             for (String broadcast : Broadcasts) {
-                WCSInteractExecutor.vanillaBroadcast(broadcast);
+                WCSInteractExecutor.vanillaBroadcast(ParentCountdown.applyPlaceHolders(broadcast));
             }
         } else {
             for (Player player : WeaveCustomSchedule.getInstance().getServer().getOnlinePlayers()) {
                 if (WCSPermission.beConsideredByCountdown(player, EventID)) {
                     for (String broadcast : Broadcasts) {
                         if (WCSConfigManager.isBroadcastWCSModeWithPrefix()) {
-                            WCSInteractExecutor.sendPrefixMessage(player, broadcast);
+                            WCSInteractExecutor.sendPrefixMessage(player, ParentCountdown.applyPlaceHolders(broadcast));
                         } else {
-                            WCSInteractExecutor.sendNormalMessage(player, broadcast);
+                            WCSInteractExecutor.sendNormalMessage(player, ParentCountdown.applyPlaceHolders(broadcast));
                         }
                     }
                 }

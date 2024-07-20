@@ -30,7 +30,7 @@ public class WCSScheduleObject {
             Set<String> eventKeys = yaml.getConfigurationSection("events").getKeys(false);
             Events = new ArrayList<>();
             for (String eventKey : eventKeys) {
-                Events.add(new WCSSingleScheduleEvent(CallID, Name, eventKey, yaml.getConfigurationSection("events." + eventKey)));
+                Events.add(new WCSSingleScheduleEvent(this, eventKey, yaml.getConfigurationSection("events." + eventKey)));
             }
             WCSInteractExecutor.gInfo(WCSUtils.applyAll(
                     WCSConfigManager.getTranslation("schedule.loaded").replace("#s", Name), null));

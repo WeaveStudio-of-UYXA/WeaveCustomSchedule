@@ -1,6 +1,5 @@
 package cn.yxgeneral.weavestudio.weavecustomschedule;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -10,8 +9,7 @@ import java.util.List;
 import java.util.regex.*;
 
 public class WCSSingleScheduleEvent {
-    private String ScheduleID;
-    private String ScheduleName;
+    private WCSScheduleObject ParentSchedule;
     private String EventName;
     private String EventID;
     private String Rule_HM;
@@ -26,9 +24,8 @@ public class WCSSingleScheduleEvent {
     private Integer LastPlayerCommandIndex = -1;
     private Boolean NeedExecute = false;
 
-    public WCSSingleScheduleEvent(String scheduleID, String scheduleName, String eventId, ConfigurationSection config){
-        ScheduleID = scheduleID;
-        ScheduleName = scheduleName;
+    public WCSSingleScheduleEvent(WCSScheduleObject parentSchedule,String eventId, ConfigurationSection config){
+        ParentSchedule = parentSchedule;
         EventID = eventId;
         initFromConfig(config);
     }
@@ -153,12 +150,12 @@ public class WCSSingleScheduleEvent {
     }
     private void executePlayerCommand(String command){
         for(Player player : WeaveCustomSchedule.getInstance().getServer().getOnlinePlayers()){
-            if (WCSPermission.beConsideredBySchedule(player, ScheduleID)){
+            if (WCSPermission.beConsideredBySchedule(player, ParentSchedule.getCallID())){
                 WCSInteractExecutor.playerExecuteCommand(player, applyPlaceHolder(command));
             }
         }
     }
-    private Boolean executeBroadcast(){
+    private void executeBroadcast(){
         if (LastConsoleCommandIndex ==-1){
             if (WCSConfigManager.getBroadcastMode().equals("vanilla")){
                 for (String broadcast : ScheduleBroadcasts){
@@ -166,7 +163,7 @@ public class WCSSingleScheduleEvent {
                 }
             } else {
                 for (Player player : WeaveCustomSchedule.getInstance().getServer().getOnlinePlayers()){
-                    if (WCSPermission.beConsideredBySchedule(player, ScheduleID)){
+                    if (WCSPermission.beConsideredBySchedule(player, ParentSchedule.getCallID())){
                         for (String broadcast : ScheduleBroadcasts){
                             if (WCSConfigManager.isBroadcastWCSModeWithPrefix()){
                                 WCSInteractExecutor.sendPrefixMessage(player, applyPlaceHolder(broadcast));
@@ -178,9 +175,8 @@ public class WCSSingleScheduleEvent {
                 }
             }
         }
-        return true;
     }
     private String applyPlaceHolder(String str){
-        return str.replace("#s", ScheduleName).replace("#e", EventName);
+        return str.replace("#s", ParentSchedule.getName()).replace("#e", EventName);
     }
 }
