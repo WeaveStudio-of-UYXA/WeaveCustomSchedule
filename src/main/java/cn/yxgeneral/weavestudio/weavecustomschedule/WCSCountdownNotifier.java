@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-
 public class WCSCountdownNotifier {
     private final WCSCountdownObject ParentCountdown;
     private final List<Color> ColorBar = new ArrayList<>();
@@ -157,7 +156,6 @@ public class WCSCountdownNotifier {
         }
         bossBar.setProgress((double)currentTick / totalTick);
         bossBar.setColor(getBarColor(1.0-(double)currentTick / totalTick));
-        Double seconds = (double)(totalTick - currentTick) / 20;
         String msg = WCSUtils.getMCColorString(getColor(1.0-(double)currentTick / totalTick)) +
                         ParentCountdown.applyPlaceHolders(BossbarModeText);
         bossBar.setTitle(msg);

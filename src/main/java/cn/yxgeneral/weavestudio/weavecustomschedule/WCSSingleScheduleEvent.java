@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import java.time.DayOfWeek;
 import java.time.Month;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.*;
 
 public class WCSSingleScheduleEvent {
@@ -22,6 +23,7 @@ public class WCSSingleScheduleEvent {
     private List<String> ScheduleBroadcasts;
     private Integer LastConsoleCommandIndex = -1;
     private Integer LastPlayerCommandIndex = -1;
+    private Boolean BroadcastExecuted = false;
     private Boolean NeedExecute = false;
 
     public WCSSingleScheduleEvent(WCSScheduleObject parentSchedule,String eventId, ConfigurationSection config){
@@ -48,19 +50,24 @@ public class WCSSingleScheduleEvent {
     public Boolean onTick(Month month, DayOfWeek week_day, Integer month_day,
                              Integer hour, Integer minute, Double percent){
         if (needExecute(month, week_day, month_day, hour, minute)){
-            executeBroadcast();
+            if (!BroadcastExecuted) {
+                BroadcastExecuted = true;
+                executeBroadcast();
+            }
             if (Rule_Immediate){
-                if (LastConsoleCommandIndex ==-1) {
+                if (LastConsoleCommandIndex.equals(-1)) {
+                    LastConsoleCommandIndex = ScheduleConsoleCommands.size() - 1;
                     for (String command : ScheduleConsoleCommands) {
                         WCSInteractExecutor.consoleExecuteCommand(applyPlaceHolder(command));
+                        WCSInteractExecutor.gInfo(applyPlaceHolder(command));
                     }
-                    LastConsoleCommandIndex = ScheduleConsoleCommands.size() - 1;
                 }
-                if (LastPlayerCommandIndex ==-1) {
+                if (LastPlayerCommandIndex.equals(-1)) {
+                    LastPlayerCommandIndex = SchedulePlayerCommands.size() - 1;
                     for (String command : SchedulePlayerCommands) {
                         executePlayerCommand(command);
                     }
-                    LastPlayerCommandIndex = SchedulePlayerCommands.size() - 1;
+
                 }
             } else {
                 Integer CurrentConsoleCommandIndex;
@@ -91,13 +98,14 @@ public class WCSSingleScheduleEvent {
             if (percent >= 1.0) {
                 LastConsoleCommandIndex = -1;
                 LastPlayerCommandIndex = -1;
+                BroadcastExecuted = false;
             }
         }
         return true;
     }
     private Boolean needExecute(Month month, DayOfWeek week_day, Integer month_day,
                                 Integer hour, Integer minute){
-        if (minute != LastMinute) {
+        if (!LastMinute.equals(minute)) {
             LastMinute = minute;
             //check month
             NeedExecute = false;
@@ -156,20 +164,18 @@ public class WCSSingleScheduleEvent {
         }
     }
     private void executeBroadcast(){
-        if (LastConsoleCommandIndex ==-1){
-            if (WCSConfigManager.getBroadcastMode().equals("vanilla")){
-                for (String broadcast : ScheduleBroadcasts){
-                    WCSInteractExecutor.vanillaBroadcast(applyPlaceHolder(broadcast));
-                }
-            } else {
-                for (Player player : WeaveCustomSchedule.getInstance().getServer().getOnlinePlayers()){
-                    if (WCSPermission.beConsideredBySchedule(player, ParentSchedule.getCallID())){
-                        for (String broadcast : ScheduleBroadcasts){
-                            if (WCSConfigManager.isBroadcastWCSModeWithPrefix()){
-                                WCSInteractExecutor.sendPrefixMessage(player, applyPlaceHolder(broadcast));
-                            } else {
-                                WCSInteractExecutor.sendNormalMessage(player, applyPlaceHolder(broadcast));
-                            }
+        if (WCSConfigManager.getBroadcastMode().equals("vanilla")){
+            for (String broadcast : ScheduleBroadcasts){
+                WCSInteractExecutor.vanillaBroadcast(applyPlaceHolder(broadcast));
+            }
+        } else {
+            for (Player player : WeaveCustomSchedule.getInstance().getServer().getOnlinePlayers()){
+                if (WCSPermission.beConsideredBySchedule(player, ParentSchedule.getCallID())){
+                    for (String broadcast : ScheduleBroadcasts){
+                        if (WCSConfigManager.isBroadcastWCSModeWithPrefix()){
+                            WCSInteractExecutor.sendPrefixMessage(player, applyPlaceHolder(broadcast));
+                        } else {
+                            WCSInteractExecutor.sendNormalMessage(player, applyPlaceHolder(broadcast));
                         }
                     }
                 }

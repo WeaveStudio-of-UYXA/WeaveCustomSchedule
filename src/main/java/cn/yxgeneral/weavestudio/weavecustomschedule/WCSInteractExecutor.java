@@ -1,13 +1,19 @@
 package cn.yxgeneral.weavestudio.weavecustomschedule;
 
 import org.bukkit.entity.Player;
-
+import org.bukkit.command.CommandException;
 public class WCSInteractExecutor {
     public static void consoleExecuteCommand(String cmd){
         //execute the command
-        WeaveCustomSchedule.getInstance().getServer().dispatchCommand(
-                WeaveCustomSchedule.getInstance().getServer().getConsoleSender(), cmd
+        try {
+            WeaveCustomSchedule.getInstance().getServer().dispatchCommand(
+                    WeaveCustomSchedule.getInstance().getServer().getConsoleSender(), cmd
             );
+        }catch(CommandException e){
+            WeaveCustomSchedule.warning("Command execution with error: " + e.getMessage());
+        }catch (Exception e){
+            WeaveCustomSchedule.warning("Command execution with error: " + e.getMessage());
+        }
     }
     public static void gInfo(String msg){
         WeaveCustomSchedule.info(WCSUtils.applyConsoleColorCode(WCSUtils.applyPlaceHolder(msg, null)));
@@ -24,7 +30,13 @@ public class WCSInteractExecutor {
         }
     }
     public static void playerExecuteCommand(Player player, String cmd){
-        WeaveCustomSchedule.getInstance().getServer().dispatchCommand(player, WCSUtils.applyAll(cmd, player));
+        try {
+            WeaveCustomSchedule.getInstance().getServer().dispatchCommand(player, WCSUtils.applyAll(cmd, player));
+        }catch(CommandException e){
+            WeaveCustomSchedule.warning("Command execution with error: " + e.getMessage());
+        }catch (Exception e){
+            WeaveCustomSchedule.warning("Command execution with error: " + e.getMessage());
+        }
     }
     public static void vanillaBroadcast(String msg){
         WeaveCustomSchedule.getInstance().getServer().broadcastMessage(WCSUtils.applyAll(msg, null));

@@ -160,14 +160,14 @@ public class WCSCountdownObject {
     }
     public String applyPlaceHolders(String msg){
         return msg
-                .replace("#c", CountdownName)
-                .replace("#e", Events.get(WCSTableManager.getCountdownCurrentIndex(CallID)).getEventName())
-                .replace("#s", "%.2f".formatted((double)(Interval - CurrentTick) / 20))
-                .replace("#i", Interval.toString())
                 .replace("#tt", TotalCount.toString())
                 .replace("#tr", ((Integer)(TotalCount-WCSTableManager.getCountdownCurrentTotal(CallID))).toString())
                 .replace("#etn", ((Integer)Events.size()).toString())
                 .replace("#eix", ((Integer)(WCSTableManager.getCountdownCurrentIndex(CallID)+1)).toString())
+                .replace("#c", CountdownName)
+                .replace("#e", Events.get(WCSTableManager.getCountdownCurrentIndex(CallID)).getEventName())
+                .replace("#s", "%.2f".formatted((double)(Interval - CurrentTick) / 20))
+                .replace("#i", Interval.toString())
                 ;
     }
 }
