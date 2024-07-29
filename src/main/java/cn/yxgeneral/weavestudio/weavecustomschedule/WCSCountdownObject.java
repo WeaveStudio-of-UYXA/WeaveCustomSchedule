@@ -83,6 +83,9 @@ public class WCSCountdownObject {
             stop();
         }
     }
+    public int getEventSize(){
+        return Events.size();
+    }
     public String getCallID(){
         return CallID;
     }

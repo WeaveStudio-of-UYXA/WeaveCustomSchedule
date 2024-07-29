@@ -70,29 +70,33 @@ public class WCSSingleScheduleEvent {
 
                 }
             } else {
-                Integer CurrentConsoleCommandIndex;
-                if (percent < 1) {
-                    CurrentConsoleCommandIndex = ((Double) (percent * ScheduleConsoleCommands.size())).intValue();
-                } else {
-                    CurrentConsoleCommandIndex = ScheduleConsoleCommands.size() - 1;
-                }
-                if (CurrentConsoleCommandIndex > LastConsoleCommandIndex) {
-                    for (int i = LastConsoleCommandIndex + 1; i <= CurrentConsoleCommandIndex; i++) {
-                        WCSInteractExecutor.consoleExecuteCommand(applyPlaceHolder(ScheduleConsoleCommands.get(i)));
+                if (ScheduleConsoleCommands.size()!=0) {
+                    Integer CurrentConsoleCommandIndex;
+                    if (percent < 1) {
+                        CurrentConsoleCommandIndex = ((Double) (percent * (ScheduleConsoleCommands.size() - 1))).intValue();
+                    } else {
+                        CurrentConsoleCommandIndex = ScheduleConsoleCommands.size() - 1;
                     }
-                    LastConsoleCommandIndex = CurrentConsoleCommandIndex;
-                }
-                Integer CurrentPlayerCommandIndex;
-                if (percent < 1) {
-                    CurrentPlayerCommandIndex = ((Double) (percent * SchedulePlayerCommands.size())).intValue();
-                } else {
-                    CurrentPlayerCommandIndex = SchedulePlayerCommands.size() - 1;
-                }
-                if (CurrentPlayerCommandIndex > LastPlayerCommandIndex) {
-                    for (int i = LastPlayerCommandIndex + 1; i <= CurrentPlayerCommandIndex; i++) {
-                        executePlayerCommand(SchedulePlayerCommands.get(i));
+                    if (CurrentConsoleCommandIndex > LastConsoleCommandIndex) {
+                        for (int i = LastConsoleCommandIndex + 1; i <= CurrentConsoleCommandIndex; i++) {
+                            WCSInteractExecutor.consoleExecuteCommand(applyPlaceHolder(ScheduleConsoleCommands.get(i)));
+                        }
+                        LastConsoleCommandIndex = CurrentConsoleCommandIndex;
                     }
-                    LastPlayerCommandIndex = CurrentPlayerCommandIndex;
+                }
+                if (SchedulePlayerCommands.size()!=0) {
+                    Integer CurrentPlayerCommandIndex;
+                    if (percent < 1) {
+                        CurrentPlayerCommandIndex = ((Double) (percent * (SchedulePlayerCommands.size() - 1))).intValue();
+                    } else {
+                        CurrentPlayerCommandIndex = SchedulePlayerCommands.size() - 1;
+                    }
+                    if (CurrentPlayerCommandIndex > LastPlayerCommandIndex) {
+                        for (int i = LastPlayerCommandIndex + 1; i <= CurrentPlayerCommandIndex; i++) {
+                            executePlayerCommand(SchedulePlayerCommands.get(i));
+                        }
+                        LastPlayerCommandIndex = CurrentPlayerCommandIndex;
+                    }
                 }
             }
             if (percent >= 1.0) {

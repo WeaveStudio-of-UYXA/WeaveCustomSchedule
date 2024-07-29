@@ -68,6 +68,10 @@ public class WCSTableManager {
                     if (!CustomCountdownsTotalCountMap.containsKey(obj.getCallID())) {
                         CustomCountdownsTotalCountMap.put(obj.getCallID(), 0);
                         CustomCountdownsCurrentIndexMap.put(obj.getCallID(), 0);
+                    }else{
+                        if (CustomCountdownsCurrentIndexMap.get(obj.getCallID()) >= obj.getEventSize()){
+                            CustomCountdownsCurrentIndexMap.put(obj.getCallID(), 0);
+                        }
                     }
                 }
             }

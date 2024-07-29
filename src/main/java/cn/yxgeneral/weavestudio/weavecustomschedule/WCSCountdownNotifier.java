@@ -31,7 +31,7 @@ public class WCSCountdownNotifier {
     }
     public void setNoticeMode(String mode){
         NoticeMode = mode;
-        if ("bossbar".equals(mode)){
+        if ("bossbar".equals(mode)||"all".equals(mode)){
             bossBar = WeaveCustomSchedule.getInstance().getServer().createBossBar(
                     "", BarColor.WHITE, BarStyle.SOLID);
             bossBar.setVisible(false);
@@ -144,6 +144,11 @@ public class WCSCountdownNotifier {
                 }
             }else if ("title".equals(NoticeMode)){
                 for (Player player : AvailablePlayers){
+                    WCSInteractExecutor.displayTitle(player, nextEventName , ParentCountdown.applyPlaceHolders(msg), 20, 20, 5);
+                }
+            }else if ("all".equals(NoticeMode)){
+                for (Player player : AvailablePlayers){
+                    WCSInteractExecutor.sendPrefixMessage(player, ParentCountdown.applyPlaceHolders(msg));
                     WCSInteractExecutor.displayTitle(player, nextEventName , ParentCountdown.applyPlaceHolders(msg), 20, 20, 5);
                 }
             }

@@ -10,14 +10,7 @@ public class WCSTimer {
     private static Integer ConfigReloadConfirmTick = 0;
     public static void start(){
         TimerTask = new WCSTickLoop();
-        LocalDateTime now = LocalDateTime.now();
-        TimerTask.StartEpoch = System.currentTimeMillis();
-        TimerTask.Month = now.getMonth();
-        TimerTask.Day_month = now.getDayOfMonth();
-        TimerTask.Day_week = now.getDayOfWeek();
-        TimerTask.Hour = now.getHour();
-        TimerTask.Minute = now.getMinute();
-        TimerTask.LastMinutes = TimerTask.Minute;
+        TimerTask.LastNow = LocalDateTime.now();
         RunningTimer = TimerTask.runTaskTimer(
                 WeaveCustomSchedule.getInstance(),  0, 1
         );
@@ -34,17 +27,7 @@ public class WCSTimer {
         return rtn;
     }
     private static class WCSTickLoop extends BukkitRunnable{
-        public Long StartEpoch;
-        public LocalDateTime Now;
-        public Long Duration;
-        public Double DurationPercent;
-        public Long ActualMinutes = 60000L;
-        public Month Month;
-        public Integer Day_month;
-        public DayOfWeek Day_week;
-        public Integer Hour;
-        public Integer Minute;
-        public Integer LastMinutes;
+        public LocalDateTime LastNow;
         @Override
         public void run() {
             if (ConfigReloadConfirmTick!=0){
@@ -53,36 +36,19 @@ public class WCSTimer {
                    ConfigReloadConfirmTick = 0;
                }
             }
-            Long currentEpoch = System.currentTimeMillis();
-            Duration = currentEpoch - StartEpoch;
-            DurationPercent = Duration.doubleValue() / ActualMinutes;
-            if (Duration >= ActualMinutes) {
-                DurationPercent = 1.0;
+            LocalDateTime now = LocalDateTime.now();
+            if(now.getMinute() == LastNow.getMinute()){
+                double DurationPercent = now.getSecond() / 60.0;
                 WCSTableManager.onTick(
-                        Month, Day_week, Day_month, Hour, LastMinutes, DurationPercent
+                        now.getMonth(), now.getDayOfWeek(), now.getDayOfMonth(),
+                        now.getHour(), now.getMinute(), DurationPercent
                 );
-                ActualMinutes = 120000 - (currentEpoch - StartEpoch);
-                ActualMinutes = ActualMinutes<0L ? 100L : ActualMinutes;
-                ActualMinutes = ActualMinutes>60000L ? 60000L : ActualMinutes;
-                StartEpoch = currentEpoch;
-                Now = LocalDateTime.now();
-                Minute = Now.getMinute();
-                if (Minute == LastMinutes){
-                    Now = Now.plusSeconds(60);
-                    LastMinutes = Now.getMinute();
-                }else{
-                    LastMinutes = Minute;
-                }
-                Month = Now.getMonth();
-                Day_month = Now.getDayOfMonth();
-                Day_week = Now.getDayOfWeek();
-                Hour = Now.getHour();
-                Minute = Now.getMinute();
-
             }else{
                 WCSTableManager.onTick(
-                        Month, Day_week, Day_month, Hour, LastMinutes, DurationPercent
+                        LastNow.getMonth(), LastNow.getDayOfWeek(), LastNow.getDayOfMonth(),
+                        LastNow.getHour(), LastNow.getMinute(), 1.0
                 );
+                LastNow = LastNow.plusMinutes(1); //
             }
         }
     }
