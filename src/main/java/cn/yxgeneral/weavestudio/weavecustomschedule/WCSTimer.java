@@ -10,7 +10,9 @@ public class WCSTimer {
     private static Integer ConfigReloadConfirmTick = 0;
     public static void start(){
         TimerTask = new WCSTickLoop();
-        TimerTask.LastNow = LocalDateTime.now();
+        WCSTickLoop.LastNow = LocalDateTime.now();
+        //get local time utc
+        WCSTickLoop.UTC = ZoneOffset.systemDefault().getRules().getOffset(Instant.now());
         RunningTimer = TimerTask.runTaskTimer(
                 WeaveCustomSchedule.getInstance(),  0, 1
         );
@@ -26,8 +28,12 @@ public class WCSTimer {
         ConfigReloadConfirmTick = 0;
         return rtn;
     }
-    private static class WCSTickLoop extends BukkitRunnable{
-        public LocalDateTime LastNow;
+    public static class WCSTickLoop extends BukkitRunnable{
+        private static LocalDateTime LastNow;
+        private static ZoneOffset UTC = ZoneOffset.UTC;
+        public static LocalDateTime getLastNow(){
+            return LastNow;
+        }
         @Override
         public void run() {
             if (ConfigReloadConfirmTick!=0){
@@ -36,18 +42,14 @@ public class WCSTimer {
                    ConfigReloadConfirmTick = 0;
                }
             }
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.ofEpochSecond(
+                    System.currentTimeMillis()/1000, 0, UTC
+            );
             if(now.getMinute() == LastNow.getMinute()){
                 double DurationPercent = now.getSecond() / 60.0;
-                WCSTableManager.onTick(
-                        now.getMonth(), now.getDayOfWeek(), now.getDayOfMonth(),
-                        now.getHour(), now.getMinute(), DurationPercent
-                );
+                WCSContainerManager.onTick(DurationPercent);
             }else{
-                WCSTableManager.onTick(
-                        LastNow.getMonth(), LastNow.getDayOfWeek(), LastNow.getDayOfMonth(),
-                        LastNow.getHour(), LastNow.getMinute(), 1.0
-                );
+                WCSContainerManager.onTick(1.0);
                 LastNow = LastNow.plusMinutes(1); //
             }
         }

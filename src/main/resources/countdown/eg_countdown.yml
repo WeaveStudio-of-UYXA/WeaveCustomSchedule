@@ -11,16 +11,8 @@ interval: 20
 # The total cycle of the countdown, 0 means infinite
 total: 0
 
-# Available plugin-placeholder in countdown configuration:
-#   #c: Countdown Name
-#   #e: Next or current event name
-#   #s: Seconds left
-#   #i: Interval
-#   #tt: Total cycle of the countdown
-#   #tr: Remaining cycle of the countdown
-#   #etn: Total number of countdown events
-#   #eix: Next or current countdown event index
-# PlaceholderAPI supported.
+# Please refer to the documentation for what plugin-placeholder can be used.
+# It`s quite complex to explain here.
 
 notice:
   # select in [bossbar, broadcast, title, none]
@@ -42,7 +34,7 @@ notice:
     - "#FFFF00"
     - "#FF0000"
 
-  bossbarModeText: "Event #e in countdown #c has #s seconds left."
+  bossbarModeText: "Event {event_name} in countdown {container_name} has {remain} seconds left."
   # If title mode is selected, the text will be displayed in the subtitle.
   # The title will display the next event name.
   broadcastAndTitleModeText:

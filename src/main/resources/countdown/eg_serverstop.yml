@@ -19,7 +19,7 @@ notice:
     - "#00FF00"
     - "#FFFF00"
     - "#FF0000"
-  bossbarModeText: "Server will stop in #s seconds."
+  bossbarModeText: "Server will stop in {remain} seconds."
   broadcastAndTitleModeText:
     '5': '5 seconds left'
     '4': '4 seconds left'

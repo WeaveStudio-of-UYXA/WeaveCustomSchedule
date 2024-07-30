@@ -7,10 +7,10 @@ import org.bukkit.event.player.*;
 public class WCSEventHandler implements Listener{
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
-        WCSTableManager.updateCountdownAvailablePlayers();
+        WCSContainerManager.updateCountdownAvailablePlayers();
     }
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
-        WCSTableManager.updateCountdownAvailablePlayers();
+        WCSContainerManager.updateCountdownAvailablePlayers();
     }
 }

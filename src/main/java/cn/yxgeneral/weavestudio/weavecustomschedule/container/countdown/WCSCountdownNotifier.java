@@ -1,15 +1,17 @@
-package cn.yxgeneral.weavestudio.weavecustomschedule;
+package cn.yxgeneral.weavestudio.weavecustomschedule.container.countdown;
 
+import cn.yxgeneral.weavestudio.weavecustomschedule.*;
 import org.bukkit.Color;
 import org.bukkit.boss.BossBar;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
 public class WCSCountdownNotifier {
-    private final WCSCountdownObject ParentCountdown;
+    private final WCSCountdownEventContainer ParentCountdown;
     private final List<Color> ColorBar = new ArrayList<>();
     private final List<Player> AvailablePlayers = new ArrayList<>();
     private String NoticeMode;
@@ -19,15 +21,30 @@ public class WCSCountdownNotifier {
     private Integer LastTextIndex = 0;
     private BossBar bossBar = null;
     private Integer CurrentTick = 0;
-    public WCSCountdownNotifier(WCSCountdownObject parentCountdown, List<String> colorBar){
-        ParentCountdown = parentCountdown;
+    public WCSCountdownNotifier(WCSCountdownEventContainer parentContainer, ConfigurationSection config){
+        ParentCountdown = parentContainer;
+        initFromConfig(config);
+    }
+    public void initFromConfig(ConfigurationSection config){
+        setColorBar(config.getStringList("colorbar"));
+        setNoticeMode(config.getString("mode"));
+        setBossbarModeText(config.getString("bossbarModeText"));
+        Map<Integer, String> broadcastAndTitleModeText = new HashMap<>();
+        Set<String> broadcastAndTitleModeTextKeys =
+                config.getConfigurationSection("broadcastAndTitleModeText").getKeys(false);
+        for (String key : broadcastAndTitleModeTextKeys) {
+            broadcastAndTitleModeText.put(Integer.parseInt(key), config.getString("broadcastAndTitleModeText." + key));
+        }
+        setBroadcastAndTitleModeText(broadcastAndTitleModeText);
+    }
+    public void setColorBar(List<String> colorBar){
+        ColorBar.clear();
         for (String color : colorBar){
             if (color.startsWith("#")){
                 color = color.substring(1);
             }
             ColorBar.add(Color.fromRGB(Integer.parseInt(color, 16)));
         }
-
     }
     public void setNoticeMode(String mode){
         NoticeMode = mode;
@@ -67,7 +84,7 @@ public class WCSCountdownNotifier {
         //get All online player
         AvailablePlayers.clear();
         for(Player player : WeaveCustomSchedule.getInstance().getServer().getOnlinePlayers()){
-            if (WCSPermission.receiveCountdown(player, ParentCountdown.getCallID())){
+            if (WCSPermission.receiveCountdown(player, ParentCountdown.getContainerID())){
                 AvailablePlayers.add(player);
             }
         }
@@ -137,19 +154,19 @@ public class WCSCountdownNotifier {
         if (seconds<=BroadcastAndTitleModeTextKeys.get(LastTextIndex)){
             int index = BroadcastAndTitleModeTextKeys.get(LastTextIndex);
             String msg = WCSUtils.getMCColorString(getColor(1.0-(double)currentTick / totalTick)) +
-                    ParentCountdown.applyPlaceHolders(BroadcastAndTitleModeText.get(index));
+                    ParentCountdown.applyPlaceHolder(BroadcastAndTitleModeText.get(index));
             if ("broadcast".equals(NoticeMode)){
                 for (Player player : AvailablePlayers){
-                    WCSInteractExecutor.sendPrefixMessage(player, ParentCountdown.applyPlaceHolders(msg));
+                    WCSInteractExecutor.sendPrefixMessage(player, ParentCountdown.applyPlaceHolder(msg));
                 }
             }else if ("title".equals(NoticeMode)){
                 for (Player player : AvailablePlayers){
-                    WCSInteractExecutor.displayTitle(player, nextEventName , ParentCountdown.applyPlaceHolders(msg), 20, 20, 5);
+                    WCSInteractExecutor.displayTitle(player, nextEventName , ParentCountdown.applyPlaceHolder(msg), 20, 20, 5);
                 }
             }else if ("all".equals(NoticeMode)){
                 for (Player player : AvailablePlayers){
-                    WCSInteractExecutor.sendPrefixMessage(player, ParentCountdown.applyPlaceHolders(msg));
-                    WCSInteractExecutor.displayTitle(player, nextEventName , ParentCountdown.applyPlaceHolders(msg), 20, 20, 5);
+                    WCSInteractExecutor.sendPrefixMessage(player, ParentCountdown.applyPlaceHolder(msg));
+                    WCSInteractExecutor.displayTitle(player, nextEventName , ParentCountdown.applyPlaceHolder(msg), 20, 20, 5);
                 }
             }
             LastTextIndex += 1;
@@ -162,7 +179,7 @@ public class WCSCountdownNotifier {
         bossBar.setProgress((double)currentTick / totalTick);
         bossBar.setColor(getBarColor(1.0-(double)currentTick / totalTick));
         String msg = WCSUtils.getMCColorString(getColor(1.0-(double)currentTick / totalTick)) +
-                        ParentCountdown.applyPlaceHolders(BossbarModeText);
+                        ParentCountdown.applyPlaceHolder(BossbarModeText);
         bossBar.setTitle(msg);
     }
 }

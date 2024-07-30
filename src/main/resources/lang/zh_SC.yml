@@ -30,24 +30,23 @@ command:
     - " - action: enable, disable"
     - "/wcs dashboard <type> - 打开仪表盘"
     - " - type: countdown, schedule, all"
+container:
+  type:
+    Countdown: "倒计时"
+    Schedule: "计划表"
+  loadSuccess: "{container_type} &a{container_name}({container_id}) &7已加载"
+  loadFailed: "{container_type} &a{container_name}({container_id}) &7加载失败，可能有语法错误"
+  noSuchContainer: "{container_type} &a{container_id} &7不存在"
+  enable: "{container_type} &a{container_name}({container_id}) &7已启用"
+  disable: "{container_type} &a{container_name}({container_id}) &7已禁用"
 countdown:
-  loaded: "已加载 倒计时 &a#c"
-  loadFailed: "加载 倒计时 &a#c &7失败，可能有语法错误"
-  started: "倒计时 &a#c &7已开始，将在 &a#s &7秒后执行"
-  executed: "倒计时 &a#c &7中的事件 &a#e &7已执行完毕"
-  enable: "倒计时 &a#c &7已启用"
-  disable: "倒计时 &a#c &7已禁用"
-  start: "倒计时 &a#c &7已开始"
-  stop: "倒计时 &a#c &7已停止"
-  pause: "倒计时 &a#c &7已暂停"
-
+  started: "倒计时 &a{container_name}({container_id}) &7已开始，将在 &a{interval} &7刻后执行"
+  executed: "倒计时 &a{container_name}({container_id}) &7中的事件 &a{event_name}({event_id}) &7已执行完毕"
+  start: "倒计时 &a{container_name}({container_id}) &7已开始"
+  stop: "倒计时 &a{container_name}({container_id}) &7已停止"
+  pause: "倒计时 &a{container_name}({container_id}) &7已暂停"
 schedule:
-  loaded: "已加载 计划表 &a#s"
-  loadFailed: "加载 计划表 &a#s &7失败，可能有语法错误"
-  loadButDisabled: "计划表 &a#s &7已加载但配置为禁用，所以不会被执行"
-  executed: "计划表 &a#s &7中的事件 &a#e &7已执行完毕"
-  enable: "计划表 &a#s &7已启用"
-  disable: "计划表 &a#s &7已禁用"
+  executed: "计划表 &a{container_name}({container_id}) &7中的事件 &a{event_name}({event_id}) &7已执行完毕"
   
 
 

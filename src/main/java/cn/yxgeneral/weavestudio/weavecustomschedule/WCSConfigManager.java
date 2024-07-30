@@ -16,11 +16,11 @@ public class WCSConfigManager {
     private static Boolean BroadcastWCSModeWithPrefix = true;
     public static void initConfig(Boolean forceClearCountdown){
         WeaveCustomSchedule.getInstance().saveDefaultConfig();
-        WeaveCustomSchedule.getInstance().saveResource("lang/en_US.yml", false);
-        WeaveCustomSchedule.getInstance().saveResource("lang/zh_SC.yml", false);
-        WeaveCustomSchedule.getInstance().saveResource("schedules/eg_schedule.yml", false);
-        WeaveCustomSchedule.getInstance().saveResource("countdowns/eg_countdown.yml", false);
-        WeaveCustomSchedule.getInstance().saveResource("countdowns/eg_serverstop.yml", false);
+        WeaveCustomSchedule.getInstance().saveResource("lang/en_US.yml", true);
+        WeaveCustomSchedule.getInstance().saveResource("lang/zh_SC.yml", true);
+        WeaveCustomSchedule.getInstance().saveResource("schedule/eg_schedule.yml", false);
+        WeaveCustomSchedule.getInstance().saveResource("countdown/eg_countdown.yml", false);
+        WeaveCustomSchedule.getInstance().saveResource("countdown/eg_serverstop.yml", false);
         String langFileName = getConfig().getString("language");
         //check lang/langFileName.yml exists
         //if not, load lang/en_US.yml, else load lang/langFileName.yml
@@ -37,8 +37,8 @@ public class WCSConfigManager {
         CountdownNotifierInterval = getConfig().getInt("countdown.notifier.interval");
         BroadcastMode = getConfig().getString("broadcast.mode");
         BroadcastWCSModeWithPrefix = getConfig().getBoolean("broadcast.prefix");
-        WCSTableManager.loadCustomSchedules();
-        WCSTableManager.loadCustomCountdowns(forceClearCountdown);
+        WCSContainerManager.loadScheduleContainers();
+        WCSContainerManager.loadCountdownContainers(forceClearCountdown);
 
     }
     public static FileConfiguration getConfig(){

@@ -32,24 +32,23 @@ command:
     - " - action: enable, disable"
     - "/wcs dashboard <type> - Open dashboard"
     - " - type: countdown, schedule, all"
+container:
+  type:
+    Countdown: "Countdown"
+    Schedule: "Schedule"
+  loadSuccess: "{container_type} &a{container_name}({container_id}) &7loaded"
+  loadFailed: "{container_type} &a{container_name}({container_id}) &7failed to load, may have syntax error"
+  noSuchContainer: "{container_type} &a{container_id} &7does not exist"
+  enable: "{container_type} &a{container_name}({container_id}) &7enabled"
+  disable: "{container_type} &a{container_name}({container_id}) &7disabled"
 countdown:
-  loaded: "Countdown &a#c &7loaded"
-  loadFailed: "Failed to load countdown &a#c, &7may have syntax error"
-  started: "Countdown &a@c &7started, will be executed in @s%s"
-  executed: "Event &a#e &7 in countdown &a#c &7executed"
-  enable: "Countdown &a#c &7enabled"
-  disable: "Countdown &a#c &7disabled"
-  start: "Countdown &a#c &7started"
-  stop: "Countdown &a#c &7stopped"
-  pause: "Countdown &a#c &7paused"
-
-schedule:
-  loaded: "Schedule &a#s &7loaded"
-  loadFailed: "Failed to load schedule &a#s, &7may have syntax error"
-  loadButDisabled: "Schedule &a#s &7loaded but disabled, it will not be executed"
-  executed: "Event &a#e &7 in schedule &a#s &7executed"
-  enable: "Schedule &a#s &7enabled"
-  disable: "Schedule &a#s &7disabled"
+  started: "Countdown &a{container_name}({container_id}) &7started, will be executed in {interval} ticks"
+  executed: "Event &a{event_name}({event_id}) &7 in countdown &a{container_name}({container_id}) &7executed"
+  start: "Countdown &a{container_name}({container_id}) &7started"
+  stop: "Countdown &a{container_name}({container_id}) &7stopped"
+  pause: "Countdown &a{container_name}({container_id}) &7paused"
+shedule:
+  executed: "Event &a{event_name}({event_id}) &7 in schedule &a{container_name}({container_id}) &7executed"
 
 
 

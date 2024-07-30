@@ -106,9 +106,9 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
                     String arg1_2 = args[0];
                     switch (arg1_2){
                         case "schedule":
-                            return WCSTableManager.getScheduleIDList();
+                            return WCSContainerManager.getScheduleContainerIDList();
                         case "countdown":
-                            return WCSTableManager.getCountdownIDList();
+                            return WCSContainerManager.getCountdownContainerIDList();
                         case "reload":
                             rtn.add("force");
                             return rtn;
@@ -146,8 +146,14 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
         }
     }
     private void handleCountdownAction(CommandSender sender,String id, String action){
-        if (!WCSTableManager.isCountdownIDExist(id)){
-            WCSInteractExecutor.gWarning(WCSConfigManager.getTranslation("plugin.noSuchCountdown").replace("#c",id));
+        if (!WCSContainerManager.isCountdownIDExist(id)){
+            WCSInteractExecutor.gWarning(
+                    WCSConfigManager.getTranslation("container.noSuchContainer")
+                            .replace("{container_type}",
+                                    WCSConfigManager.getTranslation("container.type.Countdown")
+                                )
+                            .replace("{container_id}",id)
+                );
             return;
         }
         switch (action){
@@ -158,11 +164,9 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
                     return;
                 }else{
                     if (action.equals("enable")){
-                        WCSTableManager.setCountdownEnable(id, true);
-                        WCSInteractExecutor.gInfo(WCSConfigManager.getTranslation("countdown.enable").replace("#c",id));
+                        WCSContainerManager.setCountdownEnable(id, true);
                     }else{
-                        WCSTableManager.setCountdownEnable(id, false);
-                        WCSInteractExecutor.gInfo(WCSConfigManager.getTranslation("countdown.disable").replace("#c",id));
+                        WCSContainerManager.setCountdownEnable(id, false);
                     }
                 }
                 break;
@@ -174,14 +178,11 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
                     return;
                 }
                 if (action.equals("start")){
-                    WCSTableManager.setCountdownRunning(id, true);
-                    WCSInteractExecutor.gInfo(WCSConfigManager.getTranslation("countdown.start").replace("#c",id));
+                    WCSContainerManager.setCountdownRunning(id, true);
                 }else if (action.equals("stop")){
-                    WCSTableManager.setCountdownRunning(id, false);
-                    WCSInteractExecutor.gInfo(WCSConfigManager.getTranslation("countdown.stop").replace("#c",id));
+                    WCSContainerManager.setCountdownRunning(id, false);
                 }else{
-                    WCSTableManager.pauseCountdown(id);
-                    WCSInteractExecutor.gInfo(WCSConfigManager.getTranslation("countdown.pause").replace("#c",id));
+                    WCSContainerManager.pauseCountdown(id);
                 }
                 break;
             default:
@@ -189,8 +190,14 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
         }
     }
     private void handleScheduleAction(CommandSender sender,String id, String action){
-        if (!WCSTableManager.isScheduleIDExist(id)){
-            WCSInteractExecutor.gWarning(WCSConfigManager.getTranslation("plugin.noSuchSchedule").replace("#s",id));
+        if (!WCSContainerManager.isScheduleIDExist(id)){
+            WCSInteractExecutor.gWarning(
+                    WCSConfigManager.getTranslation("plugin.noSuchContainer")
+                            .replace("{container_type}",
+                                    WCSConfigManager.getTranslation("container.type.Schedule")
+                            )
+                            .replace("{container_id}",id)
+            );
             return;
         }
         switch (action){
@@ -201,11 +208,9 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
                     return;
                 }else{
                     if (action.equals("enable")){
-                        WCSTableManager.setScheduleEnable(id, true);
-                        WCSInteractExecutor.gInfo(WCSConfigManager.getTranslation("schedule.enable").replace("#e",id));
+                        WCSContainerManager.setScheduleEnable(id, true);
                     }else{
-                        WCSTableManager.setScheduleEnable(id, false);
-                        WCSInteractExecutor.gInfo(WCSConfigManager.getTranslation("schedule.disable").replace("#e",id));
+                        WCSContainerManager.setScheduleEnable(id, false);
                     }
                 }
                 break;
@@ -221,14 +226,14 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
         }
         switch (type){
             case "all":
-                WCSTableManager.printCountdownStatus();
-                WCSTableManager.printScheduleStatus();
+                WCSContainerManager.printCountdownStatus();
+                WCSContainerManager.printScheduleStatus();
                 break;
             case "schedule":
-                WCSTableManager.printScheduleStatus();
+                WCSContainerManager.printScheduleStatus();
                 break;
             case "countdown":
-                WCSTableManager.printCountdownStatus();
+                WCSContainerManager.printCountdownStatus();
                 break;
             default:
                 sendHelpMessage(sender);
