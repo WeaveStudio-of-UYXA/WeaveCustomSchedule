@@ -7,7 +7,9 @@ import cn.yxgeneral.weavestudio.weavecustomschedule.abstractmodel.WCSAbstractSin
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.regex.Pattern;
 
 public class WCSSingleScheduleEvent extends WCSAbstractSingleEvent {
@@ -15,6 +17,13 @@ public class WCSSingleScheduleEvent extends WCSAbstractSingleEvent {
     private String Rule_Day;
     private String Rule_Month;
     private int LastMinute = -1;
+    private Month LastMonth = null;
+    private DayOfWeek LastWeekDay = null;
+    private int LastMonthDay = -1;
+    private int LastHour = -1;
+    private boolean NotTheMonth = true;
+    private boolean NotTheDay = true;
+    private boolean NotTheHour = true;
     private boolean NeedExecute = false;
     public WCSSingleScheduleEvent(WCSAbstractEventContainer parentContainer, String eventID, ConfigurationSection config) {
         super(parentContainer, eventID, config);
@@ -32,49 +41,87 @@ public class WCSSingleScheduleEvent extends WCSAbstractSingleEvent {
         }
     }
     private boolean needExecute(){
-        LocalDateTime now = WCSTimer.WCSTickLoop.getLastNow();
-        if (LastMinute!=now.getMinute()){
-            LastMinute = now.getMinute();
-            NeedExecute = false;
-            String[] months = Rule_Month.split(",");
-            for (String m : months) {
-                m = m.trim();
-                if (m.equals(String.valueOf(now.getMonth().getValue()))) {
-                    NeedExecute = true;
-                    break;
+        if (WCSTimer.getMonth().equals(LastMonth) && NotTheMonth){
+            return false;
+        }else if(!WCSTimer.getMonth().equals(LastMonth)){
+            LastMonth = WCSTimer.getMonth();
+            NotTheMonth = true;
+            if (!Rule_Month.equals("*")){
+                String[] months = Rule_Month.split(",");
+                for (String m : months) {
+                    m = m.trim();
+                    if (m.equals(String.valueOf(WCSTimer.getMonth().getValue()))) {
+                        NotTheMonth = false;
+                        break;
+                    }
                 }
-            }
-            if (!NeedExecute) {
-                return false;
-            }
-            NeedExecute = false;
-            String[] days = Rule_Day.split(",");
-            for (String d : days) {
-                d = d.trim();
-                d = d.replace("?", "[0-9]");
-                if (Pattern.matches("^" + d + "$", String.format("%02d", now.getDayOfMonth()))) {
-                    NeedExecute = true;
-                    break;
+                if (NotTheMonth){
+                    return false;
                 }
-                if (d.toUpperCase().equals(now.getDayOfWeek().toString())) {
-                    NeedExecute = true;
-                    break;
+            }else{
+                NotTheMonth = false;
+            }
+        }
+        if (WCSTimer.getWeekDay().equals(LastWeekDay) && NotTheDay &&
+                LastMonthDay == WCSTimer.getDayOfMonth()){
+            return false;
+        }else if (!WCSTimer.getWeekDay().equals(LastWeekDay) ||
+                LastMonthDay != WCSTimer.getDayOfMonth()){
+            LastWeekDay = WCSTimer.getWeekDay();
+            LastMonthDay = WCSTimer.getDayOfMonth();
+            NotTheDay = true;
+            if (!Rule_Day.equals("*")){
+                String[] days = Rule_Day.split(",");
+                for (String d : days) {
+                    d = d.trim();
+                    d = d.replace("?", "[0-9]");
+                    if (Pattern.matches("^" + d + "$", String.format("%02d", WCSTimer.getDayOfMonth()))) {
+                        NotTheDay = false;
+                        break;
+                    }
+                    if (d.toUpperCase().equals(WCSTimer.getWeekDay().toString())) {
+                        NotTheDay = false;
+                        break;
+                    }
                 }
+                if (NotTheDay) {
+                    return false;
+                }
+            }else{
+                NotTheDay = false;
             }
-            if (!NeedExecute) {
-                return false;
-            }
-            NeedExecute = false;
+        }
+        if (LastHour == WCSTimer.getHour() && NotTheHour){
+            return false;
+        }else if (LastHour != WCSTimer.getHour()){
+            LastHour = WCSTimer.getHour();
+            NotTheHour = true;
             String[] hours_minutes = Rule_HM.split(",");
             for (String hm : hours_minutes) {
                 String[] hm_split = hm.split(":");
                 if (hm_split.length == 2) {
                     String h = hm_split[0].trim();
                     h = h.replace("?", "[0-9]");
+                    if (Pattern.matches("^" + h + "$", String.format("%02d", WCSTimer.getHour()))) {
+                        NotTheHour = false;
+                        break;
+                    }
+                }
+            }
+            if (NotTheHour){
+                return false;
+            }
+        }
+        if (LastMinute != WCSTimer.getMinute()){
+            LastMinute = WCSTimer.getMinute();
+            NeedExecute = false;
+            String[] hours_minutes = Rule_HM.split(",");
+            for (String hm : hours_minutes) {
+                String[] hm_split = hm.split(":");
+                if (hm_split.length == 2) {
                     String m = hm_split[1].trim();
                     m = m.replace("?", "[0-9]");
-                    if (Pattern.matches("^" + h + "$", String.format("%02d", now.getHour())) &&
-                            Pattern.matches("^" + m + "$", String.format("%02d", now.getMinute()))) {
+                    if (Pattern.matches("^" + m + "$", String.format("%02d", WCSTimer.getMinute()))) {
                         NeedExecute = true;
                         break;
                     }

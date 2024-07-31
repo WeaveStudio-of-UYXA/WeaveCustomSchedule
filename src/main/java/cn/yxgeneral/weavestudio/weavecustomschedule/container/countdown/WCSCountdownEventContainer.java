@@ -54,23 +54,26 @@ public class WCSCountdownEventContainer extends WCSAbstractEventContainer {
         }
     }
     public void start(){
-        if (!isEnable() || IsRunning){
-            return;
+        if (isEnable() && !IsRunning){
+            IsRunning = true;
+            OnStartEvent.onTick(1.0);
+            Notifier.showBossbar();
+            WCSInteractExecutor.gInfo(applyPlaceHolder(WCSConfigManager.getTranslation("countdown.start")));
         }
-        IsRunning = true;
-        OnStartEvent.onTick(1.0);
-        Notifier.showBossbar();
-        WCSInteractExecutor.gInfo(applyPlaceHolder(WCSConfigManager.getTranslation("countdown.start")));
     }
     public void pause(){
-        IsRunning = false;
-        WCSInteractExecutor.gInfo(applyPlaceHolder(WCSConfigManager.getTranslation("countdown.pause")));
+        if (isEnable() && IsRunning){
+            IsRunning = false;
+            WCSInteractExecutor.gInfo(applyPlaceHolder(WCSConfigManager.getTranslation("countdown.pause")));
+        }
     }
-    public void stop(){
-        pause();
-        CurrentTick = 0;
-        Notifier.hideBossbar();
-        WCSInteractExecutor.gInfo(applyPlaceHolder(WCSConfigManager.getTranslation("countdown.stop")));
+    public void stop() {
+        if (isEnable() && IsRunning) {
+            IsRunning = false;
+            CurrentTick = 0;
+            Notifier.hideBossbar();
+            WCSInteractExecutor.gInfo(applyPlaceHolder(WCSConfigManager.getTranslation("countdown.stop")));
+        }
     }
     public void updateAvailablePlayer(){
         Notifier.updateAvailablePlayer();

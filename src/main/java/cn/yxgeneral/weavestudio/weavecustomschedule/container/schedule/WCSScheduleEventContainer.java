@@ -13,7 +13,7 @@ public class WCSScheduleEventContainer extends WCSAbstractEventContainer {
     @Override
     public boolean initFromConfig(String ConfigFilePath){
         if (super.initFromConfig(ConfigFilePath)){
-            WCSInteractExecutor.gInfo(applyPlaceHolder(WCSConfigManager.getTranslation("container.loadSuccess")));;
+            WCSInteractExecutor.gInfo(applyPlaceHolder(WCSConfigManager.getTranslation("container.loadSuccess")));
             return true;
         }else{
             WCSInteractExecutor.gWarning(applyPlaceHolder(WCSConfigManager.getTranslation("container.loadFailed")));

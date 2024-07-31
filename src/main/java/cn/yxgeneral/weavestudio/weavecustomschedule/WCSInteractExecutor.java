@@ -9,8 +9,6 @@ public class WCSInteractExecutor {
             WeaveCustomSchedule.getInstance().getServer().dispatchCommand(
                     WeaveCustomSchedule.getInstance().getServer().getConsoleSender(), cmd
             );
-        }catch(CommandException e){
-            WeaveCustomSchedule.warning("Command execution with error: " + e.getMessage());
         }catch (Exception e){
             WeaveCustomSchedule.warning("Command execution with error: " + e.getMessage());
         }
@@ -32,8 +30,6 @@ public class WCSInteractExecutor {
     public static void playerExecuteCommand(Player player, String cmd){
         try {
             WeaveCustomSchedule.getInstance().getServer().dispatchCommand(player, WCSUtils.applyAll(cmd, player));
-        }catch(CommandException e){
-            WeaveCustomSchedule.warning("Command execution with error: " + e.getMessage());
         }catch (Exception e){
             WeaveCustomSchedule.warning("Command execution with error: " + e.getMessage());
         }

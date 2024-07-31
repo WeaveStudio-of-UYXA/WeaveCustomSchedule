@@ -18,6 +18,7 @@ public abstract class WCSAbstractEventContainer {
         PlayerCount,
     }
     ContainerType Type;
+    String ConfigFilePath;
     String ContainerID = "Uninitialized Container";
     String ContainerName = "Untitled Container";
     String ContainerDescription = "No Description";
@@ -29,6 +30,7 @@ public abstract class WCSAbstractEventContainer {
     }
     public boolean initFromConfig(String configFilePath){
         try {
+            ConfigFilePath = configFilePath;
             ConfigFile = YamlConfiguration.loadConfiguration(
                     new File(WeaveCustomSchedule.getInstance().getDataFolder(), configFilePath)
             );
@@ -71,6 +73,12 @@ public abstract class WCSAbstractEventContainer {
             WCSInteractExecutor.gInfo(applyPlaceHolder(WCSConfigManager.getTranslation("container.enable")));
         }else{
             WCSInteractExecutor.gInfo(applyPlaceHolder(WCSConfigManager.getTranslation("container.disable")));
+        }
+        ConfigFile.set("enable", enable);
+        try {
+            ConfigFile.save(new File(WeaveCustomSchedule.getInstance().getDataFolder(), ConfigFilePath));
+        }catch (Exception e){
+            WCSInteractExecutor.gWarning(applyPlaceHolder(WCSConfigManager.getTranslation("container.saveFailed")));
         }
     }
     public YamlConfiguration getConfigFile(){

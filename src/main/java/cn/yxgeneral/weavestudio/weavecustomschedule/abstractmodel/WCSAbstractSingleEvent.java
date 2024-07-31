@@ -56,8 +56,8 @@ public abstract class WCSAbstractSingleEvent {
 
             }
         } else {
-            if (ConsoleCommands.size() != 0) {
-                Integer CurrentConsoleCommandIndex;
+            if (!ConsoleCommands.isEmpty()) {
+                int CurrentConsoleCommandIndex;
                 if (percent < 1) {
                     CurrentConsoleCommandIndex = ((Double) (percent * (ConsoleCommands.size() - 1))).intValue();
                 } else {
@@ -70,8 +70,8 @@ public abstract class WCSAbstractSingleEvent {
                     LastConsoleCommandIndex = CurrentConsoleCommandIndex;
                 }
             }
-            if (PlayerCommands.size() != 0) {
-                Integer CurrentPlayerCommandIndex;
+            if (!PlayerCommands.isEmpty()) {
+                int CurrentPlayerCommandIndex;
                 if (percent < 1) {
                     CurrentPlayerCommandIndex = ((Double) (percent * (PlayerCommands.size() - 1))).intValue();
                 } else {
@@ -119,15 +119,14 @@ public abstract class WCSAbstractSingleEvent {
         }
     }
     protected String applyPlaceHolder(String str){
-        LocalDateTime now = WCSTimer.WCSTickLoop.getLastNow();
         return ParentContainer.applyPlaceHolder(str).replace("{event_id}", EventID)
                 .replace("{event_name}", EventName)
                 .replace("{event_description}", EventDescription)
-                .replace("{month}", now.getMonth().toString())
-                .replace("{week_day}", now.getDayOfWeek().toString())
-                .replace("{month_day}", String.valueOf(now.getDayOfMonth()))
-                .replace("{hour}", String.valueOf(now.getHour()))
-                .replace("{minute}", String.valueOf(now.getMinute()));
+                .replace("{month}", WCSTimer.getMonth().toString())
+                .replace("{week_day}", WCSTimer.getWeekDay().toString())
+                .replace("{month_day}", String.valueOf(WCSTimer.getDayOfMonth()))
+                .replace("{hour}", String.valueOf(WCSTimer.getHour()))
+                .replace("{minute}", String.valueOf(WCSTimer.getMinute()));
     }
     public WCSAbstractEventContainer getParentContainer() {
         return ParentContainer;
