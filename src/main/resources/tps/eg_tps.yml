@@ -1,0 +1,30 @@
+id: 'eg_tps'
+name: 'eg_tps'
+description: 'eg_tps'
+enable: false
+# TPS average calculation window size
+# The default value is 10 ticks(0.5s)
+# Higher value will make the TPS more stable
+# Lower value will make the TPS more sensitive
+rollingWindow: 10
+
+events:
+  'warning':
+    name: 'Warning'
+    description: 'Warning'
+    tps: 19.0
+    # Condition: Less/More/Equal
+    condition: Less
+    # This is the time that the condition must be satisfied at least continuously
+    # Can be used to avoid TPS fluctuation, recommended to set to half of the rollingWindow
+    delayedTick: 5
+    # Whether to repeat the command and broadcast when the condition is satisfied
+    repeat: true
+    # Repeat interval in ticks
+    repeatInterval: 5
+    command:
+      console:
+        - "say TPS is lower than 20! Current TPS: {tps}"
+      player: []
+    broadcast:
+      - "TPS is lower than 20! Current TPS: {tps}"

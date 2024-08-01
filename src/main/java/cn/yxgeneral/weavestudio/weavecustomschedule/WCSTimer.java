@@ -26,6 +26,9 @@ public class WCSTimer {
                 WeaveCustomSchedule.getInstance(),  0, 1
         );
     }
+    public static BukkitTask getRunningTimer(){
+        return RunningTimer;
+    }
     public static void startReloadTimer(){
         ConfigReloadConfirmTick = 1;
     }

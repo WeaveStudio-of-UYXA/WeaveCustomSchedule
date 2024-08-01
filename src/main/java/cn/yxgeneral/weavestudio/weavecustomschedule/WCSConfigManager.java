@@ -21,6 +21,7 @@ public class WCSConfigManager {
         WeaveCustomSchedule.getInstance().saveResource("schedule/eg_schedule.yml", false);
         WeaveCustomSchedule.getInstance().saveResource("countdown/eg_countdown.yml", false);
         WeaveCustomSchedule.getInstance().saveResource("countdown/eg_serverstop.yml", false);
+        WeaveCustomSchedule.getInstance().saveResource("tps/eg_tps.yml", false);
         String langFileName = getConfig().getString("language");
         //check lang/langFileName.yml exists
         //if not, load lang/en_US.yml, else load lang/langFileName.yml
@@ -39,7 +40,7 @@ public class WCSConfigManager {
         BroadcastWCSModeWithPrefix = getConfig().getBoolean("broadcast.prefix");
         WCSContainerManager.loadScheduleContainers();
         WCSContainerManager.loadCountdownContainers(forceClearCountdown);
-
+        WCSContainerManager.loadTpsContainers();
     }
     public static FileConfiguration getConfig(){
         return WeaveCustomSchedule.getInstance().getConfig();

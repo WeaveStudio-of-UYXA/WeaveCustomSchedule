@@ -36,6 +36,7 @@ container:
   type:
     Countdown: "Countdown"
     Schedule: "Schedule"
+    Tps: "TPS"
   loadSuccess: "{container_type} &a{container_name}({container_id}) &7loaded"
   loadFailed: "{container_type} &a{container_name}({container_id}) &7failed to load, may have syntax error"
   noSuchContainer: "{container_type} &a{container_id} &7does not exist"

@@ -103,6 +103,7 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
                     rtn.add("help");
                     rtn.add("schedule");
                     rtn.add("countdown");
+                    rtn.add("tps");
                     rtn.add("reload");
                     rtn.add("dashboard");
                     return rtn;
@@ -113,6 +114,8 @@ public class WCSCommandHandler implements CommandExecutor, TabCompleter{
                             return WCSContainerManager.getScheduleContainerIDList();
                         case "countdown":
                             return WCSContainerManager.getCountdownContainerIDList();
+                        case "tps":
+                            return WCSContainerManager.getTpsContainerIDList();
                         case "reload":
                             rtn.add("force");
                             return rtn;

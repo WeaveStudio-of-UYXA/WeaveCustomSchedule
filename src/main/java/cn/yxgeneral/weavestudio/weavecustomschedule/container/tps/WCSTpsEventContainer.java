@@ -12,7 +12,7 @@ public class WCSTpsEventContainer extends WCSAbstractEventContainer {
     private int MsptRecordIndex = 0;
     private int[] MsptRecord = null;
     private int MsptSum = 0;
-    private int Tps = 20;
+    private float Tps = 20.0f;
     public WCSTpsEventContainer(){
         super(ContainerType.Tps);
     }
@@ -50,7 +50,10 @@ public class WCSTpsEventContainer extends WCSAbstractEventContainer {
         MsptRecord[MsptRecordIndex] = WCSTimer.getMsPerTick();
         MsptSum += MsptRecord[MsptRecordIndex];
         MsptRecordIndex = (MsptRecordIndex + 1) % RollingWindow; // rotate the index
-        Tps = 1000 / (MsptSum / RollingWindow);
+        Tps = 1000.0f / ((float)MsptSum / RollingWindow);
+        if (Tps > 20) {
+            Tps = 20;
+        }
         for(WCSAbstractSingleEvent event: getEvents()){
             event.onTick(1.0);
         }
@@ -60,7 +63,7 @@ public class WCSTpsEventContainer extends WCSAbstractEventContainer {
         return super.applyPlaceHolder(str)
                 .replace("{tps}", String.valueOf(Tps));
     }
-    public int getTps(){
+    public float getTps(){
         return Tps;
     }
 }

@@ -74,12 +74,16 @@ public abstract class WCSAbstractEventContainer {
         }else{
             WCSInteractExecutor.gInfo(applyPlaceHolder(WCSConfigManager.getTranslation("container.disable")));
         }
+        /*
+        // Unfortunately, YamlConfiguration will save the file incorrectly
+        // It will lose the quotation marks of the string
         ConfigFile.set("enable", enable);
         try {
             ConfigFile.save(new File(WeaveCustomSchedule.getInstance().getDataFolder(), ConfigFilePath));
         }catch (Exception e){
             WCSInteractExecutor.gWarning(applyPlaceHolder(WCSConfigManager.getTranslation("container.saveFailed")));
         }
+        */
     }
     public YamlConfiguration getConfigFile(){
         return this.ConfigFile;

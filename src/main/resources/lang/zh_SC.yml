@@ -34,6 +34,7 @@ container:
   type:
     Countdown: "倒计时"
     Schedule: "计划表"
+    Tps: "TPS"
   loadSuccess: "{container_type} &a{container_name}({container_id}) &7已加载"
   loadFailed: "{container_type} &a{container_name}({container_id}) &7加载失败，可能有语法错误"
   noSuchContainer: "{container_type} &a{container_id} &7不存在"

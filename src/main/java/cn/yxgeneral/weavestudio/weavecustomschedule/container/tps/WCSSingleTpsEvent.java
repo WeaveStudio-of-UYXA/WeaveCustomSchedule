@@ -8,9 +8,9 @@ import org.bukkit.entity.Player;
 
 public class WCSSingleTpsEvent extends WCSAbstractSingleEvent {
     public enum TpsCondition{
-        Equal,
-        Greater,
-        Less,
+        EQUAL,
+        MORE,
+        LESS,
     }
     private TpsCondition Condition;
     private double TpsValue;
@@ -27,9 +27,9 @@ public class WCSSingleTpsEvent extends WCSAbstractSingleEvent {
     }
     private void initFromConfig_Tps(ConfigurationSection config){
         try{
-            Condition = TpsCondition.valueOf(config.getString("condition"));
+            Condition = TpsCondition.valueOf(config.getString("condition").toUpperCase());
         }catch (Exception e){
-            Condition = TpsCondition.Equal;
+            Condition = TpsCondition.EQUAL;
         }
         TpsValue = config.getDouble("tps");
         DelayedTick = config.getInt("delayedTick");
@@ -39,37 +39,42 @@ public class WCSSingleTpsEvent extends WCSAbstractSingleEvent {
     }
     @Override
     public void onTick(double percent) {
-        int tps = ((WCSTpsEventContainer)getParentContainer()).getTps();
+        float tps = ((WCSTpsEventContainer)getParentContainer()).getTps();
+        boolean nowSatisfied = false;
         switch(Condition){
-            case Equal:
-                Satisfied = tps == TpsValue;
+            case EQUAL:
+                nowSatisfied = tps == TpsValue;
                 break;
-            case Greater:
-                Satisfied = tps > TpsValue;
+            case MORE:
+                nowSatisfied = tps > TpsValue;
                 break;
-            case Less:
-                Satisfied = tps < TpsValue;
+            case LESS:
+                nowSatisfied = tps < TpsValue;
                 break;
         }
-        if (Satisfied) {
+        if (Satisfied != nowSatisfied){
             if (DelayedCycle < DelayedTick) {
                 DelayedCycle++;
-            }else {
+            }else{
                 DelayedCycle = 0;
-                if (!Repeat && !JustTriggered) {
+                Satisfied = nowSatisfied;
+            }
+        }else{
+            DelayedCycle = 0;
+        }
+        if (Satisfied) {
+            if (!Repeat && !JustTriggered) {
+                super.onTick(1.0);
+                JustTriggered = true;
+            } else if (Repeat) {
+                if (RepeatCycle == 0) {
                     super.onTick(1.0);
-                    JustTriggered = true;
-                } else if (Repeat) {
-                    if (RepeatCycle == 0) {
-                        super.onTick(1.0);
-                    }
-                    RepeatCycle = (RepeatCycle + 1) % RepeatInterval;
                 }
+                RepeatCycle = (RepeatCycle + 1) % RepeatInterval;
             }
         }else{
             JustTriggered = false;
             RepeatCycle = 0;
-            DelayedCycle = 0;
         }
     }
     @Override

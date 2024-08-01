@@ -1,7 +1,7 @@
 package cn.yxgeneral.weavestudio.weavecustomschedule;
 
 import org.bukkit.entity.Player;
-import org.bukkit.command.CommandException;
+
 public class WCSInteractExecutor {
     public static void consoleExecuteCommand(String cmd){
         //execute the command
