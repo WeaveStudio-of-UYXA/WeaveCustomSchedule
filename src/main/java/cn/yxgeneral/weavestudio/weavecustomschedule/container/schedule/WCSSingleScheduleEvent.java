@@ -40,6 +40,9 @@ public class WCSSingleScheduleEvent extends WCSAbstractSingleEvent {
         }
     }
     private boolean needExecute(){
+        if (WCSTimer.getMinute() == LastMinute){
+            return NeedExecute;
+        }
         if (WCSTimer.getMonth().equals(LastMonth) && NotTheMonth){
             return false;
         }else if(!WCSTimer.getMonth().equals(LastMonth)){
@@ -55,6 +58,7 @@ public class WCSSingleScheduleEvent extends WCSAbstractSingleEvent {
                     }
                 }
                 if (NotTheMonth){
+                    NeedExecute = false;
                     return false;
                 }
             }else{
@@ -84,6 +88,7 @@ public class WCSSingleScheduleEvent extends WCSAbstractSingleEvent {
                     }
                 }
                 if (NotTheDay) {
+                    NeedExecute = false;
                     return false;
                 }
             }else{
@@ -108,6 +113,7 @@ public class WCSSingleScheduleEvent extends WCSAbstractSingleEvent {
                 }
             }
             if (NotTheHour){
+                NeedExecute = false;
                 return false;
             }
         }
@@ -120,7 +126,10 @@ public class WCSSingleScheduleEvent extends WCSAbstractSingleEvent {
                 if (hm_split.length == 2) {
                     String m = hm_split[1].trim();
                     m = m.replace("?", "[0-9]");
-                    if (Pattern.matches("^" + m + "$", String.format("%02d", WCSTimer.getMinute()))) {
+                    String h = hm_split[0].trim();
+                    h = h.replace("?", "[0-9]");
+                    if (Pattern.matches("^" + m + "$", String.format("%02d", WCSTimer.getMinute())) &&
+                            Pattern.matches("^" + h + "$", String.format("%02d", WCSTimer.getHour()))) {
                         NeedExecute = true;
                         break;
                     }
